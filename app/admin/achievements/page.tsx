@@ -6,14 +6,11 @@ import { Play, ArrowLeft, Plus, Search, Filter, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation" // Changed from next/router to next/navigation
 import { ApiController } from "@/app/services/apiController"
 import Navigation from "@/components/ui/navigation"
 
-
-
-interface AchievementData
-{
+export interface AchievementData {
     MaNhiemVu?: number,
     TenNhiemVu: string,
     GiaTriThuong: number,
@@ -25,17 +22,15 @@ interface AchievementData
 export default function AchievementsPage() {
   const [searchTerm, setSearchTerm] = useState("")
 
-  //const router = useRouter();
-  const [data,setData] = useState<AchievementData[]>([]);
-  const [isLoading,setIsLoading] = useState(true);
+  const router = useRouter();
+  const [data, setData] = useState<AchievementData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const apiController = new ApiController();
 
-  useEffect( ()=>{
-    const fetchData = async () =>
-    {
-      try
-      {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
         setIsLoading(true);
         const apiController = new ApiController();
         const result = await apiController.get<AchievementData[]>('/NhiemVu');
@@ -43,27 +38,32 @@ export default function AchievementsPage() {
         setData(result || []);
         setError(null);
       }
-      catch(err)
-      {
+      catch(err) {
         setError("Error when try fetch data Achievemnts");
       }
-      finally
-      {
+      finally {
         setIsLoading(false);
       }
     }
     fetchData();
-  },[]);
+  }, []);
+
+  const handleUpdateClick = (maNhiemVu: number) => {
+    if (!maNhiemVu) {
+      console.error("IdAchienvement not valid");
+      return;
+    }
+    router.push(`/admin/achievements/edit/${maNhiemVu}`);
+  };
 
   const filteredAchievements = data.filter((skin) => {
     if (!searchTerm) return true;
     const nameMatch = skin.TenNhiemVu?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
-    return nameMatch ;
+    return nameMatch;
   });
 
   return (
     <div className="min-h-screen bg-rose-50">
-  
       <Navigation/>
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
@@ -111,53 +111,58 @@ export default function AchievementsPage() {
 
           {/* Achievements Table */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="w-[50px]">#</TableHead>
-                    <TableHead>Mã Nhiệm Vụ</TableHead>
-                    <TableHead>Tên Nhiệm Vụ</TableHead>
-                    <TableHead>Giá Trị Thưởng</TableHead>
-                    <TableHead>Mốc Yêu Cầu</TableHead>
-                    <TableHead>Loại Nhiệm Vụ</TableHead>
-                    <TableHead>Loại Phần Thưởng</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredAchievements.map((achievement) => (
-                    <TableRow key={achievement.MaNhiemVu} className="hover:bg-gray-50">
-                      <TableCell className="font-medium">{achievement.MaNhiemVu}</TableCell> 
-                      <TableCell>{achievement.MaNhiemVu}</TableCell>
-                      <TableCell>{achievement.TenNhiemVu}</TableCell>
-                      <TableCell>{achievement.GiaTriThuong}</TableCell>
-                      <TableCell>{achievement.YeuCau}</TableCell>
-                      <TableCell>{achievement.MaNhiemVu}</TableCell>
-                      <TableCell>{achievement.LoaiPhanThuong}</TableCell>
-                      <TableCell className="text-right">
-                        <Link href={`/admin/achievements/edit/${achievement.MaNhiemVu}`}>
+            {isLoading ? (
+              <div className="p-8 text-center">Loading achievements...</div>
+            ) : error ? (
+              <div className="p-8 text-center text-red-500">{error}</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="w-[50px]">#</TableHead>
+                      <TableHead>Mã Nhiệm Vụ</TableHead>
+                      <TableHead>Tên Nhiệm Vụ</TableHead>
+                      <TableHead>Giá Trị Thưởng</TableHead>
+                      <TableHead>Mốc Yêu Cầu</TableHead>
+                      <TableHead>Loại Nhiệm Vụ</TableHead>
+                      <TableHead>Loại Phần Thưởng</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredAchievements.map((achievement) => (
+                      <TableRow key={achievement.MaNhiemVu} className="hover:bg-gray-50">
+                        <TableCell className="font-medium">{achievement.MaNhiemVu}</TableCell> 
+                        <TableCell>{achievement.MaNhiemVu}</TableCell>
+                        <TableCell>{achievement.TenNhiemVu}</TableCell>
+                        <TableCell>{achievement.GiaTriThuong}</TableCell>
+                        <TableCell>{achievement.YeuCau}</TableCell>
+                        <TableCell>{achievement.LoaiNhiemVu}</TableCell>
+                        <TableCell>{achievement.LoaiPhanThuong}</TableCell>
+                        <TableCell className="text-right">
                           <Button
                             variant="outline"
                             size="sm"
                             className="text-rose-500 border-rose-500 hover:bg-rose-50"
+                            onClick={() => handleUpdateClick(achievement.MaNhiemVu || 0)}
                           >
                             <Pencil className="h-4 w-4 mr-1" />
                             Update
                           </Button>
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
 
             {/* Pagination */}
             <div className="flex items-center justify-between px-4 py-4 border-t">
               <div className="text-sm text-gray-500">
-                Showing <span className="font-medium">1</span> to <span className="font-medium">13</span> of{" "}
-                <span className="font-medium">13</span> achievements
+                Showing <span className="font-medium">1</span> to <span className="font-medium">{filteredAchievements.length}</span> of{" "}
+                <span className="font-medium">{filteredAchievements.length}</span> achievements
               </div>
               <div className="flex space-x-2">
                 <Button variant="outline" size="sm" className="rounded-full" disabled>

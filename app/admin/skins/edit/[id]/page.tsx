@@ -143,7 +143,7 @@ export default function EditSkinPage({ params }: { params: { id: string } }) {
                         onChange={handleInputChange}
                         className="rounded-lg"
                         placeholder="VD: TP001"
-                        disabled // Không cho phép thay đổi mã, vì đó là khóa chính
+                        disabled 
                       />
                       <p className="text-xs text-gray-500">Mã trang phục không thể thay đổi</p>
                     </div>
