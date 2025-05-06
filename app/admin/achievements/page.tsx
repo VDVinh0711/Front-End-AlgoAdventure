@@ -1,119 +1,70 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Play, ArrowLeft, Plus, Search, Filter, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useRouter } from "next/router"
+import { ApiController } from "@/app/services/apiController"
+import Navigation from "@/components/ui/navigation"
 
-// Achievement data from the image
-const achievementData = [
-  { id: 1, maNhiemVu: "1", tenNhiemVu: "Kiếm 5 đồng", giaTri: 10, yeuCau: 5, maLoaiNhiemVu: 1, maPhanThuong: 2 },
-  { id: 2, maNhiemVu: "2", tenNhiemVu: "Kiếm 7 đồng", giaTri: 10, yeuCau: 7, maLoaiNhiemVu: 1, maPhanThuong: 2 },
-  { id: 3, maNhiemVu: "3", tenNhiemVu: "Kiếm 10 đồng", giaTri: 15, yeuCau: 10, maLoaiNhiemVu: 1, maPhanThuong: 2 },
-  { id: 4, maNhiemVu: "4", tenNhiemVu: "Kiếm 15 đồng", giaTri: 20, yeuCau: 15, maLoaiNhiemVu: 1, maPhanThuong: 2 },
-  { id: 5, maNhiemVu: "5", tenNhiemVu: "Kiếm 20 đồng", giaTri: 25, yeuCau: 20, maLoaiNhiemVu: 1, maPhanThuong: 2 },
-  { id: 6, maNhiemVu: "6", tenNhiemVu: "Kiếm 30 đồng", giaTri: 40, yeuCau: 30, maLoaiNhiemVu: 1, maPhanThuong: 2 },
-  { id: 7, maNhiemVu: "7", tenNhiemVu: "Kiếm 40 đồng", giaTri: 50, yeuCau: 40, maLoaiNhiemVu: 1, maPhanThuong: 2 },
-  { id: 8, maNhiemVu: "8", tenNhiemVu: "Sử dụng 10 đồng", giaTri: 20, yeuCau: 10, maLoaiNhiemVu: 2, maPhanThuong: 2 },
-  { id: 9, maNhiemVu: "9", tenNhiemVu: "Sử dụng 20 đồng", giaTri: 20, yeuCau: 20, maLoaiNhiemVu: 2, maPhanThuong: 2 },
-  { id: 10, maNhiemVu: "10", tenNhiemVu: "Sử dụng 40 đồng", giaTri: 30, yeuCau: 40, maLoaiNhiemVu: 2, maPhanThuong: 2 },
-  { id: 11, maNhiemVu: "11", tenNhiemVu: "Đạt cấp độ 2", giaTri: 2, yeuCau: 2, maLoaiNhiemVu: 3, maPhanThuong: 1 },
-  { id: 12, maNhiemVu: "12", tenNhiemVu: "Đạt cấp độ 5", giaTri: 5, yeuCau: 5, maLoaiNhiemVu: 3, maPhanThuong: 1 },
-  { id: 13, maNhiemVu: "13", tenNhiemVu: "Đạt cấp độ 7", giaTri: 5, yeuCau: 7, maLoaiNhiemVu: 3, maPhanThuong: 1 },
-]
+
+
+interface AchievementData
+{
+    MaNhiemVu?: number,
+    TenNhiemVu: string,
+    GiaTriThuong: number,
+    YeuCau: number,
+    LoaiNhiemVu: number,
+    LoaiPhanThuong: number
+}
 
 export default function AchievementsPage() {
   const [searchTerm, setSearchTerm] = useState("")
 
-  // Filter achievements based on search term
-  const filteredAchievements = achievementData.filter((achievement) =>
-    achievement.tenNhiemVu.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  //const router = useRouter();
+  const [data,setData] = useState<AchievementData[]>([]);
+  const [isLoading,setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const apiController = new ApiController();
+
+  useEffect( ()=>{
+    const fetchData = async () =>
+    {
+      try
+      {
+        setIsLoading(true);
+        const apiController = new ApiController();
+        const result = await apiController.get<AchievementData[]>('/NhiemVu');
+        console.log(result);
+        setData(result || []);
+        setError(null);
+      }
+      catch(err)
+      {
+        setError("Error when try fetch data Achievemnts");
+      }
+      finally
+      {
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+  },[]);
+
+  const filteredAchievements = data.filter((skin) => {
+    if (!searchTerm) return true;
+    const nameMatch = skin.TenNhiemVu?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
+    return nameMatch ;
+  });
 
   return (
     <div className="min-h-screen bg-rose-50">
-      {/* Navigation */}
-      <header className="container mx-auto py-4 px-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center">
-          <div className="relative h-10 w-20">
-            <div className="absolute inset-0 bg-rose-500 rounded-full flex items-center justify-center">
-              <Play className="h-5 w-5 text-white ml-1" />
-            </div>
-            <div
-              className="absolute inset-0 border-2 border-rose-500 rounded-full"
-              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-            ></div>
-          </div>
-          <span className="text-rose-500 font-bold ml-2 text-sm">GAMETAMIN</span>
-        </Link>
-
-        <nav className="hidden md:flex items-center space-x-2">
-          <Link href="/">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Home
-            </Button>
-          </Link>
-          <Link href="/about">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              About
-            </Button>
-          </Link>
-          <Link href="/games">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Game
-            </Button>
-          </Link>
-          <Link href="/recruit">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Recruit
-            </Button>
-          </Link>
-          <Link href="/contact">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Contact
-            </Button>
-          </Link>
-          <Link href="/admin">
-            <Button variant="default" className="bg-rose-500 hover:bg-rose-600 rounded-full">
-              Admin
-            </Button>
-          </Link>
-          <Link href="/login">
-            <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full ml-2">
-              Login
-            </Button>
-          </Link>
-        </nav>
-
-        <div className="flex md:hidden items-center space-x-2">
-          <Link href="/login">
-            <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full">
-              Login
-            </Button>
-          </Link>
-          <Button variant="outline" size="icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6"
-            >
-              <line x1="4" x2="20" y1="12" y2="12" />
-              <line x1="4" x2="20" y1="6" y2="6" />
-              <line x1="4" x2="20" y1="18" y2="18" />
-            </svg>
-          </Button>
-        </div>
-      </header>
-
+  
+      <Navigation/>
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
@@ -165,27 +116,27 @@ export default function AchievementsPage() {
                 <TableHeader>
                   <TableRow className="bg-gray-50">
                     <TableHead className="w-[50px]">#</TableHead>
-                    <TableHead>maNhiemVu</TableHead>
-                    <TableHead>tenNhiemVu</TableHead>
-                    <TableHead>giaTri</TableHead>
-                    <TableHead>yeuCau</TableHead>
-                    <TableHead>maLoaiNhiemVu</TableHead>
-                    <TableHead>maPhanThuong</TableHead>
+                    <TableHead>Mã Nhiệm Vụ</TableHead>
+                    <TableHead>Tên Nhiệm Vụ</TableHead>
+                    <TableHead>Giá Trị Thưởng</TableHead>
+                    <TableHead>Mốc Yêu Cầu</TableHead>
+                    <TableHead>Loại Nhiệm Vụ</TableHead>
+                    <TableHead>Loại Phần Thưởng</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredAchievements.map((achievement) => (
-                    <TableRow key={achievement.id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium">{achievement.id}</TableCell>
-                      <TableCell>{achievement.maNhiemVu}</TableCell>
-                      <TableCell>{achievement.tenNhiemVu}</TableCell>
-                      <TableCell>{achievement.giaTri}</TableCell>
-                      <TableCell>{achievement.yeuCau}</TableCell>
-                      <TableCell>{achievement.maLoaiNhiemVu}</TableCell>
-                      <TableCell>{achievement.maPhanThuong}</TableCell>
+                    <TableRow key={achievement.MaNhiemVu} className="hover:bg-gray-50">
+                      <TableCell className="font-medium">{achievement.MaNhiemVu}</TableCell> 
+                      <TableCell>{achievement.MaNhiemVu}</TableCell>
+                      <TableCell>{achievement.TenNhiemVu}</TableCell>
+                      <TableCell>{achievement.GiaTriThuong}</TableCell>
+                      <TableCell>{achievement.YeuCau}</TableCell>
+                      <TableCell>{achievement.MaNhiemVu}</TableCell>
+                      <TableCell>{achievement.LoaiPhanThuong}</TableCell>
                       <TableCell className="text-right">
-                        <Link href={`/admin/achievements/edit/${achievement.id}`}>
+                        <Link href={`/admin/achievements/edit/${achievement.MaNhiemVu}`}>
                           <Button
                             variant="outline"
                             size="sm"
