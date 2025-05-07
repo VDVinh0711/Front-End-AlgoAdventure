@@ -22,6 +22,8 @@ export default function Navigation() {
   }
 
   const isAdmin = hasRole('Admin');
+  console.log("Navigation - Is Admin:", isAdmin);
+  console.log("Navigation - User data:", userData);
 
   return (
     <header className="container mx-auto py-4 px-4 flex items-center justify-between">

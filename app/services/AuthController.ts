@@ -9,7 +9,12 @@ interface LoginRequest {
 interface DataUserResponse {
     IDUser?: string;
     UserName?: string;
+    RoleUsers?: string[] | string;
+    Role?: string[] | string;
+    Roles?: string[] | string;
+    UserRoles?: string[] | string;
     RoleUse?: string[] | string;
+    [key: string]: any; // Allow for any additional properties
 }
 
 interface AuthTokens {
@@ -138,25 +143,37 @@ export class AuthController {
                 return null;
             }
             
-            // Ensure RoleUse is an array if it exists
+            // Log entire response to see what fields are available
+            console.log("API Response data:", JSON.stringify(response.data));
+ 
+            // Check for different possible role field names in the API response
+            const roleData = response.data.RoleUsers || 
+                             response.data.Role || 
+                             response.data.Roles || 
+                             response.data.UserRoles ||
+                             response.data.RoleUse;
+                             
+            console.log("Role data found:", roleData);
+                             
+            // Ensure roles is an array if it exists
             let roles: string[] = [];
-            if (response.data.RoleUse) {
-                // Handle if RoleUse is a string or array
-                if (typeof response.data.RoleUse === 'string') {
+            if (roleData) {
+                // Handle if roles is a string or array
+                if (typeof roleData === 'string') {
                     // Split by comma if it's a comma-separated string
-                    roles = (response.data.RoleUse as string).split(',').map((r: string) => r.trim());
-                } else if (Array.isArray(response.data.RoleUse)) {
-                    roles = response.data.RoleUse as string[];
+                    roles = (roleData as string).split(',').map((r: string) => r.trim());
+                } else if (Array.isArray(roleData)) {
+                    roles = roleData as string[];
                 }
             }
             
             this._userData = {
                 IDUser: response.data.IDUser,
                 UserName: response.data.UserName,
-                RoleUse: roles
+                RoleUsers: roles
             };
             
-            console.log("fetchUserData: User data retrieved:", this._userData);
+            console.log("fetchUserData: User data processed:", this._userData);
             return this._userData;
         } catch (error) {
             console.error("fetchUserData error:", error);
@@ -237,16 +254,16 @@ export class AuthController {
     }
 
     public hasRole(role: string): boolean {
-        console.log(`Checking role ${role} against:`, this._userData?.RoleUse);
+        console.log(`Checking role ${role} against:`, this._userData?.RoleUsers);
         
         // If no roles data, return false
-        if (!this._userData?.RoleUse || !Array.isArray(this._userData.RoleUse)) {
+        if (!this._userData?.RoleUsers || !Array.isArray(this._userData.RoleUsers)) {
             return false;
         }
         
         // Case-insensitive check for the role
         const normalizedRole = role.toLowerCase();
-        return this._userData.RoleUse.some(userRole => 
+        return this._userData.RoleUsers.some(userRole => 
             typeof userRole === 'string' && userRole.toLowerCase() === normalizedRole
         );
     }

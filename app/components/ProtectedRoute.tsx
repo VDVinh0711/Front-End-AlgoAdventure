@@ -40,10 +40,15 @@ export default function ProtectedRoute({ children, requiredRoles = [] }: Protect
             console.log("User data:", userData);
             
             // Special handling for admin pages
-            if (requiredRoles.includes('Admin') && userData?.RoleUse) {
+            if (requiredRoles.includes('Admin') && userData?.RoleUsers) {
+                // Convert RoleUsers to array if it's a string
+                const roleArray = typeof userData.RoleUsers === 'string' 
+                    ? userData.RoleUsers.split(',').map(r => r.trim())
+                    : userData.RoleUsers;
+                
                 // Check if user has any role containing 'admin' (case insensitive)
-                const hasAdminRole = userData.RoleUse.some(role => 
-                    typeof role === 'string' && role.toLowerCase().includes('admin')
+                const hasAdminRole = roleArray.some((role: string) => 
+                    role.toLowerCase().includes('admin')
                 );
                 
                 console.log("Has admin role (case-insensitive check):", hasAdminRole);
@@ -70,9 +75,14 @@ export default function ProtectedRoute({ children, requiredRoles = [] }: Protect
     }
 
     // Special case for admin pages - check for any admin-like role
-    if (isAuthenticated && requiredRoles.includes('Admin') && userData?.RoleUse) {
-        const hasAdminRole = userData.RoleUse.some(role => 
-            typeof role === 'string' && role.toLowerCase().includes('admin')
+    if (isAuthenticated && requiredRoles.includes('Admin') && userData?.RoleUsers) {
+        // Convert RoleUsers to array if it's a string
+        const roleArray = typeof userData.RoleUsers === 'string' 
+            ? userData.RoleUsers.split(',').map(r => r.trim())
+            : userData.RoleUsers;
+            
+        const hasAdminRole = roleArray.some((role: string) => 
+            role.toLowerCase().includes('admin')
         );
         
         if (hasAdminRole) {

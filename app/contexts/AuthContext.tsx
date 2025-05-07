@@ -7,7 +7,7 @@ import { AuthController, AuthError } from '@/app/services/AuthController';
 interface UserData {
     IDUser?: string;
     UserName?: string;
-    RoleUse?: string[];
+    RoleUsers?: string[] | string;
 }
 
 interface AuthContextType {
@@ -75,8 +75,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 // Debug user roles
                 console.log("Login successful, user data:", authController.userData);
                 console.log("Has Admin role:", authController.hasRole('Admin'));
-                if (authController.userData?.RoleUse) {
-                    console.log("User roles:", authController.userData.RoleUse);
+                if (authController.userData?.RoleUsers) {
+                    console.log("User roles:", authController.userData.RoleUsers);
                 } else {
                     console.log("No roles found in user data");
                 }

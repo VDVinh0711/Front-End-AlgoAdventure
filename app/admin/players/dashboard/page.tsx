@@ -2,20 +2,11 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Play, ArrowLeft, Plus, Search, Filter, BarChart2, PieChart, LineChart } from "lucide-react"
+import { Play, ArrowLeft, BarChart2, PieChart, LineChart, Download, Layers } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   BarChart,
   Bar,
@@ -48,18 +39,10 @@ const playerData = [
   { id: 12, maNguoiChoi: 40, soTien: 990, soKinhNghiem: 0, soGioY: 0, capDo: 2, diemSo: 0 },
 ]
 
-export default function PlayersPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [players, setPlayers] = useState(playerData)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [playerToDelete, setPlayerToDelete] = useState<number | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+export default function PlayerDashboardPage() {
   const [chartData, setChartData] = useState<any[]>([])
   const [chartType, setChartType] = useState<"score" | "level" | "money">("score")
   const [visualizationType, setVisualizationType] = useState<"bar" | "line" | "pie">("pie")
-
-  // Filter players based on search term
-  const filteredPlayers = players.filter((player) => player.maNguoiChoi.toString().includes(searchTerm))
 
   useEffect(() => {
     prepareChartData()
@@ -202,25 +185,6 @@ export default function PlayersPage() {
     return ""
   }
 
-  const handleDeleteClick = (playerId: number) => {
-    setPlayerToDelete(playerId)
-    setIsDeleteDialogOpen(true)
-  }
-
-  const handleDeleteConfirm = () => {
-    if (playerToDelete === null) return
-
-    setIsLoading(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      setPlayers(players.filter((player) => player.id !== playerToDelete))
-      setIsLoading(false)
-      setIsDeleteDialogOpen(false)
-      setPlayerToDelete(null)
-    }, 1000)
-  }
-
   return (
     <div className="min-h-screen bg-rose-50">
       {/* Navigation */}
@@ -240,14 +204,15 @@ export default function PlayersPage() {
           {/* Page Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-rose-500">Manage Players</h1>
-              <p className="text-gray-600 mt-1">View and manage player accounts</p>
+              <h1 className="text-3xl font-bold text-rose-500">Player Analytics</h1>
+              <p className="text-gray-600 mt-1">View and analyze player statistics</p>
             </div>
             <div className="mt-4 md:mt-0">
-              <Button className="bg-rose-500 hover:bg-rose-600 text-white rounded-full">
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Player
-              </Button>
+              <Link href="/admin/players">
+                <Button variant="outline" className="border-rose-500 text-rose-500 hover:bg-rose-50 rounded-full">
+                  Manage Players
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -334,6 +299,10 @@ export default function PlayersPage() {
                       <PieChart className="h-4 w-4" />
                     </Button>
                   </div>
+                  <Button variant="outline" size="sm" className="text-gray-600">
+                    <Download className="h-4 w-4 mr-1" />
+                    Export
+                  </Button>
                 </div>
               </div>
             </CardHeader>
@@ -357,98 +326,71 @@ export default function PlayersPage() {
             </CardContent>
           </Card>
 
-          {/* Search and Filter */}
-          <div className="bg-white p-4 rounded-xl shadow-sm mb-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                <Input
-                  placeholder="Search by player ID..."
-                  className="pl-10 rounded-full"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <Button variant="outline" className="rounded-full">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-            </div>
-          </div>
-
           {/* Players Table */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead>maNguoiChoi</TableHead>
-                    <TableHead>soTien</TableHead>
-                    <TableHead>soKinhNghiem</TableHead>
-                    <TableHead>soGioY</TableHead>
-                    <TableHead>capDo</TableHead>
-                    <TableHead>diemSo</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPlayers.map((player) => (
-                    <TableRow key={player.id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium">{player.maNguoiChoi}</TableCell>
-                      <TableCell>{player.soTien}</TableCell>
-                      <TableCell>{player.soKinhNghiem}</TableCell>
-                      <TableCell>{player.soGioY}</TableCell>
-                      <TableCell>{player.capDo}</TableCell>
-                      <TableCell>{player.diemSo}</TableCell>
+          <Card>
+            <CardHeader>
+              <CardTitle>Player Data</CardTitle>
+              <CardDescription>Detailed information about all players</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead>maNguoiChoi</TableHead>
+                      <TableHead>soTien</TableHead>
+                      <TableHead>soKinhNghiem</TableHead>
+                      <TableHead>soGioY</TableHead>
+                      <TableHead>capDo</TableHead>
+                      <TableHead>diemSo</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Pagination */}
-            <div className="flex items-center justify-between px-4 py-4 border-t">
-              <div className="text-sm text-gray-500">
-                Showing <span className="font-medium">1</span> to{" "}
-                <span className="font-medium">{filteredPlayers.length}</span> of{" "}
-                <span className="font-medium">{filteredPlayers.length}</span> players
+                  </TableHeader>
+                  <TableBody>
+                    {playerData.map((player) => (
+                      <TableRow key={player.id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium">{player.maNguoiChoi}</TableCell>
+                        <TableCell>{player.soTien}</TableCell>
+                        <TableCell>{player.soKinhNghiem}</TableCell>
+                        <TableCell>{player.soGioY}</TableCell>
+                        <TableCell>{player.capDo}</TableCell>
+                        <TableCell>{player.diemSo}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                              onClick={() => {
+                                // In a real app, this would open a modal with detailed player data
+                                alert(
+                                  `Detailed data for player ${player.maNguoiChoi}:\n\nLevel: ${player.capDo}\nScore: ${player.diemSo}\nMoney: ${player.soTien}\nExperience: ${player.soKinhNghiem}\nHints: ${player.soGioY}`,
+                                )
+                              }}
+                            >
+                              <Layers className="h-4 w-4 mr-1" />
+                              Show Data
+                            </Button>
+                            <Link href={`/admin/players/edit/${player.id}`}>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-rose-500 border-rose-500 hover:bg-rose-50"
+                              >
+                                View Details
+                              </Button>
+                            </Link>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="rounded-full" disabled>
-                  Previous
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full" disabled>
-                  Next
-                </Button>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </main>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Delete Player</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this player? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="flex justify-between sm:justify-between">
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)} disabled={isLoading}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDeleteConfirm}
-              disabled={isLoading}
-              className="bg-red-500 hover:bg-red-600"
-            >
-              {isLoading ? "Deleting..." : "Delete Player"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
