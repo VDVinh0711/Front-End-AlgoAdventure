@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import Navigation from "@/components/ui/navigation"
+import { useToast } from "@/hooks/use-toast"
 
 // Player data from the image
 const playerData = [
@@ -31,7 +33,7 @@ const playerData = [
 export default function EditPlayerPage() {
   const params = useParams()
   const router = useRouter()
-  const playerId = Number(params.id)
+  const playerId = Number(params?.id ?? 0)
 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -44,6 +46,8 @@ export default function EditPlayerPage() {
     capDo: 0,
     diemSo: 0,
   })
+
+  const { toast } = useToast()
 
   useEffect(() => {
     // Simulate API call to fetch player data
@@ -69,94 +73,42 @@ export default function EditPlayerPage() {
     setIsSaving(true)
 
     // Simulate API call to update player
-    setTimeout(() => {
+    try {
+      setTimeout(() => {
+        setIsSaving(false)
+        
+        // Show success toast
+        toast({
+          title: "✅ Success!",
+          description: `Player information has been updated successfully.`,
+          variant: "default",
+          className: "bg-green-100 border-green-500 border",
+        });
+        
+        // Add a delay before redirecting to allow toast to be seen
+        setTimeout(() => {
+          router.push("/admin/players");
+        }, 3000);
+      }, 1000)
+    } catch (err) {
       setIsSaving(false)
-      router.push("/admin/players")
-    }, 1000)
+      console.error("Error updating player:", err);
+      
+      // Show error toast
+      toast({
+        title: "❌ Update Failed",
+        description: "Could not update player information. Please try again.",
+        variant: "destructive",
+        className: "bg-red-100 border-red-500 border text-black",
+        duration: 5000,
+      });
+    }
   }
 
   return (
     <div className="min-h-screen bg-rose-50">
-      {/* Navigation */}
-      <header className="container mx-auto py-4 px-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center">
-          <div className="relative h-10 w-20">
-            <div className="absolute inset-0 bg-rose-500 rounded-full flex items-center justify-center">
-              <Play className="h-5 w-5 text-white ml-1" />
-            </div>
-            <div
-              className="absolute inset-0 border-2 border-rose-500 rounded-full"
-              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-            ></div>
-          </div>
-          <span className="text-rose-500 font-bold ml-2 text-sm">GAMETAMIN</span>
-        </Link>
-
-        <nav className="hidden md:flex items-center space-x-2">
-          <Link href="/">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Home
-            </Button>
-          </Link>
-          <Link href="/about">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              About
-            </Button>
-          </Link>
-          <Link href="/games">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Game
-            </Button>
-          </Link>
-          <Link href="/recruit">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Recruit
-            </Button>
-          </Link>
-          <Link href="/contact">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Contact
-            </Button>
-          </Link>
-          <Link href="/admin">
-            <Button variant="default" className="bg-rose-500 hover:bg-rose-600 rounded-full">
-              Admin
-            </Button>
-          </Link>
-          <Link href="/login">
-            <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full ml-2">
-              Login
-            </Button>
-          </Link>
-        </nav>
-
-        <div className="flex md:hidden items-center space-x-2">
-          <Link href="/login">
-            <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full">
-              Login
-            </Button>
-          </Link>
-          <Button variant="outline" size="icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6"
-            >
-              <line x1="4" x2="20" y1="12" y2="12" />
-              <line x1="4" x2="20" y1="6" y2="6" />
-              <line x1="4" x2="20" y1="18" y2="18" />
-            </svg>
-          </Button>
-        </div>
-      </header>
-
+      <Navigation />
+      
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">

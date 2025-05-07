@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { ApiController } from "@/app/services/apiController"
 import Navigation from "@/components/ui/navigation"
+import { useToast } from "@/hooks/use-toast"
 
 interface SkinData {
   id?: number,
@@ -23,11 +24,13 @@ interface SkinData {
 
 export default function EditSkinPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const maTrangPhuc = params.id;
+  // Extract id safely to avoid the warning
+  const skinId = params?.id || "";
 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { toast } = useToast()
   const [skin, setSkin] = useState<SkinData>({
     id: 0,
     maTrangPhuc: "",
@@ -44,24 +47,24 @@ export default function EditSkinPage({ params }: { params: { id: string } }) {
         setIsLoading(true);
         setError(null);
         const allSkins = await apiController.get<SkinData[]>('/TrangPhuc');
-        const foundSkin = allSkins.find(s => s.maTrangPhuc === maTrangPhuc);
+        const foundSkin = allSkins.find(s => s.maTrangPhuc === skinId);
         if (foundSkin) {
           setSkin(foundSkin);
         } else {
-          setError(`Not found skindata with id ${maTrangPhuc}`);
+          setError(`Not found skindata with id ${skinId}`);
         }
       } catch (err) {
-        console.error("Eror when fetch data :", err);
-        setError("Can't load data , please try again");
+        console.error("Error when fetch data:", err);
+        setError("Can't load data, please try again");
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (maTrangPhuc) {
+    if (skinId) {
       fetchSkinData();
     }
-  }, [maTrangPhuc]);
+  }, [skinId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -76,11 +79,32 @@ export default function EditSkinPage({ params }: { params: { id: string } }) {
     setIsSaving(true)
     setError(null);
     try {
-      await apiController.put<SkinData>(`/TrangPhuc/${maTrangPhuc}`, skin);
-      router.push("/admin/skins");
+      await apiController.put<SkinData>(`/TrangPhuc/${skinId}`, skin);
+      
+      // Show success toast
+      toast({
+        title: "✅ Thành công!",
+        description: `Trang phục "${skin.tenTrangPhuc}" đã được cập nhật thành công.`,
+        variant: "default",
+        className: "bg-green-100 border-green-500 border",
+      });
+      
+      // Add a delay before redirecting to allow toast to be seen
+      setTimeout(() => {
+        router.push("/admin/skins");
+      }, 3000);
     } catch (err) {
       console.error("Error when update data skin", err);
-      setError("Can't Update Skindata");
+      setError("Không thể cập nhật dữ liệu trang phục");
+      
+      // Show error toast
+      toast({
+        title: "❌ Cập nhật thất bại",
+        description: "Không thể cập nhật trang phục. Vui lòng kiểm tra kết nối và thử lại.",
+        variant: "destructive",
+        className: "bg-red-100 border-red-500 border text-black",
+        duration: 5000,
+      });
     } finally {
       setIsSaving(false);
     }

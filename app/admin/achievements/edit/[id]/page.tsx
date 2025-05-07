@@ -33,7 +33,7 @@ const rewardTypes = [
 export default function EditAchievementPage() {
   const router = useRouter()
   const params = useParams()
-  const achievementId = Number.parseInt(params.id as string)
+  const achievementId = Number.parseInt(params?.id as string || "0")
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
