@@ -12,7 +12,7 @@ export class ApiController
 
     constructor(baseUrl: string = 'https://192.168.11.1:5001/api') {
         this.baseUrl = baseUrl;
-        this.authController = new AuthController(baseUrl);
+        this.authController = AuthController.getInstance(baseUrl);
         this.axiosInstance = axios.create({
             baseURL: this.baseUrl,
             headers: {
@@ -24,8 +24,7 @@ export class ApiController
         // Add request interceptor to check token before each request
         this.axiosInstance.interceptors.request.use(
             async (config) => {
-                // Get token from localStorage
-                const token = localStorage.getItem(SafeKeyLocalStorage.Token);
+                const token = this.authController.getToken();
                 
                 if (token) {
                     // Add token to request headers
@@ -34,13 +33,13 @@ export class ApiController
                     // Try to refresh token if not available
                     const isAuthenticated = await this.authController.checkAuthStatus();
                     if (isAuthenticated) {
-                        const newToken = localStorage.getItem(SafeKeyLocalStorage.Token);
+                        const newToken = this.authController.getToken();
                         if (newToken) {
                             config.headers['Authorization'] = `Bearer ${newToken}`;
                         }
                     } else {
-                        // Redirect to login or handle unauthenticated state
-                        window.location.href = '/';
+                        // We'll handle this in the response interceptor
+                        // for better UX rather than redirecting here
                     }
                 }
                 return config;
@@ -57,20 +56,33 @@ export class ApiController
             },
             async (error) => {
                 const originalRequest = error.config;
-
-                if (error.response.status === 401 && !originalRequest._retry) {
+                
+                // Handle 401 Unauthorized errors (expired token)
+                if (error.response?.status === 401 && !originalRequest._retry) {
                     originalRequest._retry = true;
+                    
+                    // Try to refresh the token
                     const isRefreshed = await this.authController.refreshAuthToken();
+                    
                     if (isRefreshed) {
-                        const newToken = localStorage.getItem(SafeKeyLocalStorage.Token);
+                        const newToken = this.authController.getToken();
                         if (newToken) {
+                            // Update authorization header
                             this.axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+                            originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+                            
+                            // Retry the original request
                             return this.axiosInstance(originalRequest);
                         }
                     } else {
-                        window.location.href = '/';
+                        // If token refresh failed, redirect to login
+                        this.authController.logout();
+                        if (typeof window !== 'undefined') {
+                            window.location.href = '/login';
+                        }
                     }
                 }
+                
                 return Promise.reject(error);
             }
         );

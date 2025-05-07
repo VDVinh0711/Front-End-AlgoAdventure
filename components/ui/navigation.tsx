@@ -5,8 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Play, User, LogOut, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-import { AuthController } from "@/app/services/AuthController"
+import { useAuth } from "@/app/contexts/AuthContext"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,40 +13,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-// Simple user type
-
-
 export default function Navigation() {
-  const [user, setUser] = useState<string | null>(null)
   const router = useRouter()
-
+  const { isAuthenticated, userData, logout, hasRole } = useAuth()
   
-  useEffect(() => {
-    const authenticate = new AuthController();
-    const fetchDataUser = async () => {
-      try {
-        const userData = await authenticate.getDataUser();
-        console.log(userData);
-        if (userData.UserName) {
-            setUser(userData.UserName);
-        }
-      } catch (e) {
-        console.error("Error parsing user data or fetching:", e);
-        localStorage.removeItem('user');
-      }
-    };
-  
-    fetchDataUser();
-  }, []);
-  
-
   const handleLogout = () => {
-    // Clear user data from localStorage
-    localStorage.removeItem('user')
-    setUser(null)
-    // Redirect to home page
-    router.push('/')
+    logout();
   }
+
+  const isAdmin = hasRole('Admin');
 
   return (
     <header className="container mx-auto py-4 px-4 flex items-center justify-between">
@@ -86,19 +60,21 @@ export default function Navigation() {
           </Button>
         </Link>
         
-        {user ? (
+        {isAuthenticated ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-2 gap-2 rounded-full">
                 <User className="h-4 w-4" />
-                {user}
+                {userData?.UserName || "User"}
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href="/admin">Admin Dashboard</Link>
-              </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin">Admin Dashboard</Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild>
                 <Link href="/profile">Profile</Link>
               </DropdownMenuItem>
@@ -119,7 +95,7 @@ export default function Navigation() {
 
       {/* Mobile navigation */}
       <div className="flex md:hidden items-center">
-        {user ? (
+        {isAuthenticated ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="gap-2 rounded-full">
@@ -140,9 +116,11 @@ export default function Navigation() {
               <DropdownMenuItem asChild>
                 <Link href="/contact">Contact</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/admin">Admin Dashboard</Link>
-              </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin">Admin Dashboard</Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild>
                 <Link href="/profile">Profile</Link>
               </DropdownMenuItem>

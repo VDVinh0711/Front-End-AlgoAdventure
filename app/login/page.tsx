@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Play } from "lucide-react"
@@ -10,46 +10,80 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AuthController } from "@/app/services/AuthController"
+import { useAuth } from "@/app/contexts/AuthContext"
+import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const { login, isAuthenticated } = useAuth()
+  const { toast } = useToast()
+
+  // If already authenticated, redirect to admin dashboard
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/admin')
+    }
+  }, [isAuthenticated, router])
 
   const handleLogin = async (e: React.FormEvent) => {
-    console.log("Handle login", e);
     e.preventDefault()
+    setError(null)
     setIsLoading(true)
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    const username = formData.get('username');
-    const password = formData.get('password');
-    console.log("Login attempt with:", { username, password });
     
+    const form = e.target as HTMLFormElement
+    const formData = new FormData(form)
+    const username = formData.get('username') as string
+    const password = formData.get('password') as string
 
-    const authController = new AuthController();
-    const isAuthenticated = await authController.authenticate(username as string, password as string);
-
-    if(isAuthenticated)
-    {
-      setTimeout(() => {
-        setIsLoading(false)
-        router.push('/admin')
-      }, 1500);
-    }
-    else
-    {
-      setIsLoading(false);
+    try {
+      const result = await login(username, password)
+      
+      if (result.success) {
+        toast({
+          title: "✅ Login successful!",
+          description: "Redirecting you to the dashboard...",
+          variant: "default",
+          className: "bg-green-100 border-green-500 border",
+        })
+        
+        // Router will handle the redirection based on the useEffect above
+      } else if (result.error) {
+        setError(result.error.message)
+        toast({
+          title: "❌ Login failed",
+          description: result.error.message,
+          variant: "destructive",
+          className: "bg-red-100 border-red-500 border text-black",
+          duration: 5000,
+        })
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.")
+      toast({
+        title: "❌ Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+        className: "bg-red-100 border-red-500 border text-black",
+        duration: 5000,
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      alert("Registration successful! (This is just a demo)")
-    }, 1500)
+    toast({
+      title: "⚠️ Feature not available",
+      description: "Registration is not implemented yet. Please contact your administrator.",
+      variant: "default",
+      className: "bg-yellow-100 border-yellow-500 border",
+      duration: 5000,
+    })
+    setIsLoading(false)
   }
 
   return (
@@ -78,6 +112,12 @@ export default function LoginPage() {
               <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold text-rose-500">Welcome Back!</h1>
                 <p className="text-gray-600 mt-2">Sign in to access your account</p>
+                
+                {error && (
+                  <div className="mt-4 p-3 bg-red-50 text-red-500 rounded-lg border border-red-200 text-sm">
+                    {error}
+                  </div>
+                )}
               </div>
 
               <Tabs defaultValue="login" className="w-full">
