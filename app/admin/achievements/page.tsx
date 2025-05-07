@@ -83,7 +83,10 @@ export default function AchievementsPage() {
               <p className="text-gray-600 mt-1">View and update game achievements</p>
             </div>
             <div className="mt-4 md:mt-0">
-              <Button className="bg-rose-500 hover:bg-rose-600 text-white rounded-full">
+              <Button 
+                className="bg-rose-500 hover:bg-rose-600 text-white rounded-full"
+                onClick={() => router.push('/admin/achievements/create')}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add New Achievement
               </Button>
