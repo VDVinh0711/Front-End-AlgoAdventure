@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import Navigation from "@/components/ui/navigation"
 
 // Define the types for our level data
 interface Point {
@@ -104,12 +105,14 @@ export default function CreateLevelPage() {
 
   // Handle mouse down on a block
   const handleMouseDown = (x: number, y: number, isPlayerPosition: boolean) => {
-    if (isPlayerPosition && !hasCoin) {
-      // Only drag player if we're not in "add coin" mode
+    // Always allow drawing regardless of player position
+    setIsDrawing(true)
+    handleBlockClick(x, y)
+
+    // Only set dragging player if we're specifically clicking on the player icon
+    // and not trying to modify the block
+    if (isPlayerPosition && !isDrawing) {
       setIsDraggingPlayer(true)
-    } else {
-      setIsDrawing(true)
-      handleBlockClick(x, y)
     }
   }
 
@@ -199,85 +202,8 @@ export default function CreateLevelPage() {
   return (
     <div className="min-h-screen bg-rose-50">
       {/* Navigation */}
-      <header className="container mx-auto py-4 px-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center">
-          <div className="relative h-10 w-20">
-            <div className="absolute inset-0 bg-rose-500 rounded-full flex items-center justify-center">
-              <Play className="h-5 w-5 text-white ml-1" />
-            </div>
-            <div
-              className="absolute inset-0 border-2 border-rose-500 rounded-full"
-              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-            ></div>
-          </div>
-          <span className="text-rose-500 font-bold ml-2 text-sm">GAMETAMIN</span>
-        </Link>
-
-        <nav className="hidden md:flex items-center space-x-2">
-          <Link href="/">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Home
-            </Button>
-          </Link>
-          <Link href="/about">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              About
-            </Button>
-          </Link>
-          <Link href="/games">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Game
-            </Button>
-          </Link>
-          <Link href="/recruit">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Recruit
-            </Button>
-          </Link>
-          <Link href="/contact">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Contact
-            </Button>
-          </Link>
-          <Link href="/admin">
-            <Button variant="default" className="bg-rose-500 hover:bg-rose-600 rounded-full">
-              Admin
-            </Button>
-          </Link>
-          <Link href="/login">
-            <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full ml-2">
-              Login
-            </Button>
-          </Link>
-        </nav>
-
-        <div className="flex md:hidden items-center space-x-2">
-          <Link href="/login">
-            <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full">
-              Login
-            </Button>
-          </Link>
-          <Button variant="outline" size="icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6"
-            >
-              <line x1="4" x2="20" y1="12" y2="12" />
-              <line x1="4" x2="20" y1="6" y2="6" />
-              <line x1="4" x2="20" y1="18" y2="18" />
-            </svg>
-          </Button>
-        </div>
-      </header>
-
+      <Navigation />
+      
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">

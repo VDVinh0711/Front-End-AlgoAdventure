@@ -107,7 +107,9 @@ export default function AdminPage() {
                 <p className="text-sm text-gray-600">Create, edit and organize game levels and difficulty settings.</p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-rose-500 hover:bg-rose-600 text-white rounded-full">Manage Levels</Button>
+                <Link href="/admin/levels" className="w-full">
+                  <Button className="w-full bg-rose-500 hover:bg-rose-600 text-white rounded-full">Manage Levels</Button>
+                </Link>
               </CardFooter>
             </Card>
 
