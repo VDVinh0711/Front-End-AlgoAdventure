@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Play, ArrowLeft, Plus, Search, Filter, BarChart2, PieChart, LineChart } from "lucide-react"
+import { Play, ArrowLeft, Plus, Search, Filter, BarChart2, PieChart, LineChart as LucideLineChart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -29,41 +29,78 @@ import {
   Legend,
   ResponsiveContainer,
   PieChart as RechartsPieChart,
+  LineChart,
 } from "recharts"
 import Navigation from "@/components/ui/navigation"
 
-// Player data from the image
-const playerData = [
-  { id: 1, maNguoiChoi: 14, soTien: 990, soKinhNghiem: 167, soGioY: 0, capDo: 15, diemSo: 900 },
-  { id: 2, maNguoiChoi: 15, soTien: 957, soKinhNghiem: 140, soGioY: 0, capDo: 20, diemSo: 900 },
-  { id: 3, maNguoiChoi: 16, soTien: 989, soKinhNghiem: 0, soGioY: 1, capDo: 0, diemSo: 0 },
-  { id: 4, maNguoiChoi: 17, soTien: 1000, soKinhNghiem: 0, soGioY: 2, capDo: 0, diemSo: 0 },
-  { id: 5, maNguoiChoi: 18, soTien: 1000, soKinhNghiem: 0, soGioY: 2, capDo: 0, diemSo: 0 },
-  { id: 6, maNguoiChoi: 19, soTien: 1000, soKinhNghiem: 0, soGioY: 2, capDo: 0, diemSo: 0 },
-  { id: 7, maNguoiChoi: 32, soTien: 990, soKinhNghiem: 140, soGioY: 0, capDo: 20, diemSo: 900 },
-  { id: 8, maNguoiChoi: 33, soTien: 1000, soKinhNghiem: 0, soGioY: 2, capDo: 0, diemSo: 0 },
-  { id: 9, maNguoiChoi: 37, soTien: 990, soKinhNghiem: 189, soGioY: 0, capDo: 33, diemSo: 2700 },
-  { id: 10, maNguoiChoi: 38, soTien: 977, soKinhNghiem: 0, soGioY: 0, capDo: 1, diemSo: 0 },
-  { id: 11, maNguoiChoi: 39, soTien: 959, soKinhNghiem: 0, soGioY: 0, capDo: 1, diemSo: 1800 },
-  { id: 12, maNguoiChoi: 40, soTien: 990, soKinhNghiem: 0, soGioY: 0, capDo: 2, diemSo: 0 },
-]
+// Define the player interface to match API response
+interface Player {
+  maNguoiChoi: number
+  soTien: number
+  soKinhNghiem: number
+  soGoiY: number
+  capDo: number
+  diemSo: number
+}
 
 export default function PlayersPage() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [players, setPlayers] = useState(playerData)
+  const [players, setPlayers] = useState<Player[]>([])
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [playerToDelete, setPlayerToDelete] = useState<number | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [chartData, setChartData] = useState<any[]>([])
   const [chartType, setChartType] = useState<"score" | "level" | "money">("score")
   const [visualizationType, setVisualizationType] = useState<"bar" | "line" | "pie">("pie")
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch players data from API
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        // Use the full server URL with HTTPS
+        const response = await fetch('https://192.168.11.1:5001/api/NguoiChoi', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          // Add this to handle HTTPS connection with self-signed certificates
+          // or certificates that might not be trusted
+          cache: 'no-store',
+        })
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch player data: ${response.status} ${response.statusText}`)
+        }
+        
+        const data = await response.json()
+        setPlayers(data)
+      } catch (error) {
+        console.error('Error fetching player data:', error)
+        setError(`Error connecting to API: ${error instanceof Error ? error.message : String(error)}`)
+        // Set empty array to avoid undefined errors
+        setPlayers([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchPlayers()
+  }, [])
 
   // Filter players based on search term
-  const filteredPlayers = players.filter((player) => player.maNguoiChoi.toString().includes(searchTerm))
+  const filteredPlayers = players.filter((player) => 
+    player.maNguoiChoi.toString().includes(searchTerm)
+  )
 
   useEffect(() => {
-    prepareChartData()
-  }, [chartType])
+    if (players.length > 0) {
+      prepareChartData()
+    }
+  }, [chartType, players])
 
   const prepareChartData = () => {
     let data: any[] = []
@@ -79,7 +116,7 @@ export default function PlayersPage() {
       ]
 
       data = scoreRanges.map((range) => {
-        const count = playerData.filter((player) => player.diemSo >= range.min && player.diemSo <= range.max).length
+        const count = players.filter((player) => player.diemSo >= range.min && player.diemSo <= range.max).length
         return {
           name: range.label,
           value: count,
@@ -97,7 +134,7 @@ export default function PlayersPage() {
       ]
 
       data = levelRanges.map((range) => {
-        const count = playerData.filter((player) => player.capDo >= range.min && player.capDo <= range.max).length
+        const count = players.filter((player) => player.capDo >= range.min && player.capDo <= range.max).length
         return {
           name: range.label,
           value: count,
@@ -115,7 +152,7 @@ export default function PlayersPage() {
       ]
 
       data = moneyRanges.map((range) => {
-        const count = playerData.filter((player) => player.soTien >= range.min && player.soTien <= range.max).length
+        const count = players.filter((player) => player.soTien >= range.min && player.soTien <= range.max).length
         return {
           name: range.label,
           value: count,
@@ -140,10 +177,22 @@ export default function PlayersPage() {
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <XAxis dataKey="name" fontSize={12} tickLine={false} />
+            <YAxis fontSize={12} tickLine={false} />
+            <Tooltip 
+              contentStyle={{ 
+                fontSize: "14px", 
+                fontWeight: "500", 
+                backgroundColor: "white", 
+                borderRadius: "8px", 
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)" 
+              }} 
+            />
+            <Legend 
+              formatter={(value) => <span style={{ fontSize: "14px", color: "#444" }}>{value}</span>} 
+              verticalAlign="bottom" 
+              height={36}
+            />
             <Bar dataKey="value" fill="#f43f5e" radius={[4, 4, 0, 0]}>
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={getColorForIndex(index)} />
@@ -157,10 +206,22 @@ export default function PlayersPage() {
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <XAxis dataKey="name" fontSize={12} tickLine={false} />
+            <YAxis fontSize={12} tickLine={false} />
+            <Tooltip 
+              contentStyle={{ 
+                fontSize: "14px", 
+                fontWeight: "500", 
+                backgroundColor: "white", 
+                borderRadius: "8px", 
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)" 
+              }} 
+            />
+            <Legend 
+              formatter={(value) => <span style={{ fontSize: "14px", color: "#444" }}>{value}</span>} 
+              verticalAlign="bottom" 
+              height={36}
+            />
             <Line type="monotone" dataKey="value" stroke="#f43f5e" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
@@ -178,13 +239,31 @@ export default function PlayersPage() {
               outerRadius={100}
               fill="#f43f5e"
               dataKey="value"
+              innerRadius={0}
             >
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={getColorForIndex(index)} />
               ))}
             </Pie>
-            <Tooltip formatter={(value) => [`${value} players`, "Count"]} />
-            <Legend />
+            <Tooltip 
+              formatter={(value) => [`${value} players`, "Count"]}
+              contentStyle={{ 
+                fontSize: "14px", 
+                fontWeight: "500", 
+                backgroundColor: "white", 
+                borderRadius: "8px", 
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)" 
+              }} 
+            />
+            <Legend 
+              formatter={(value) => <span style={{ fontSize: "14px", color: "#444" }}>{value}</span>}
+              layout="horizontal"
+              verticalAlign="bottom"
+              align="center"
+              iconSize={12}
+              iconType="circle"
+              wrapperStyle={{ paddingTop: "20px" }}
+            />
           </RechartsPieChart>
         </ResponsiveContainer>
       )
@@ -207,18 +286,35 @@ export default function PlayersPage() {
     setIsDeleteDialogOpen(true)
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (playerToDelete === null) return
 
     setIsLoading(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      setPlayers(players.filter((player) => player.id !== playerToDelete))
+    try {
+      // Call API to delete player with full URL
+      const response = await fetch(`https://192.168.11.1:5001/api/NguoiChoi/${playerToDelete}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store',
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete player')
+      }
+      
+      // Update the UI by removing the deleted player
+      setPlayers(players.filter(player => player.maNguoiChoi !== playerToDelete))
+    } catch (error) {
+      console.error('Error deleting player:', error)
+      setError(`Error deleting player: ${error instanceof Error ? error.message : String(error)}`)
+    } finally {
       setIsLoading(false)
       setIsDeleteDialogOpen(false)
       setPlayerToDelete(null)
-    }, 1000)
+    }
   }
 
   return (
@@ -237,38 +333,30 @@ export default function PlayersPage() {
             </Link>
           </div>
 
+          {/* Error message */}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
+              <p className="font-bold">Error</p>
+              <p>{error}</p>
+            </div>
+          )}
+
           {/* Page Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold text-rose-500">Manage Players</h1>
               <p className="text-gray-600 mt-1">View and manage player accounts</p>
             </div>
-            <div className="mt-4 md:mt-0">
-              <Button className="bg-rose-500 hover:bg-rose-600 text-white rounded-full">
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Player
-              </Button>
-            </div>
           </div>
 
           {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-500">Total Players</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-rose-500">{playerData.length}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Active Players</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-rose-500">
-                  {playerData.filter((player) => player.capDo > 0).length}
-                </div>
+                <div className="text-3xl font-bold text-rose-500">{players.length}</div>
               </CardContent>
             </Card>
             <Card>
@@ -277,7 +365,9 @@ export default function PlayersPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">
-                  {Math.round(playerData.reduce((acc, player) => acc + player.capDo, 0) / playerData.length)}
+                  {players.length > 0 
+                    ? Math.round(players.reduce((acc, player) => acc + player.capDo, 0) / players.length) 
+                    : 0}
                 </div>
               </CardContent>
             </Card>
@@ -287,7 +377,9 @@ export default function PlayersPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">
-                  {Math.round(playerData.reduce((acc, player) => acc + player.diemSo, 0) / playerData.length)}
+                  {players.length > 0
+                    ? Math.round(players.reduce((acc, player) => acc + player.diemSo, 0) / players.length)
+                    : 0}
                 </div>
               </CardContent>
             </Card>
@@ -321,7 +413,7 @@ export default function PlayersPage() {
                       }
                       onClick={() => setVisualizationType("line")}
                     >
-                      <LineChart className="h-4 w-4" />
+                      <LucideLineChart className="h-4 w-4" />
                     </Button>
                     <Button
                       variant={visualizationType === "pie" ? "default" : "ghost"}
@@ -338,22 +430,28 @@ export default function PlayersPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="score" onValueChange={(value) => setChartType(value as any)}>
-                <TabsList className="grid w-full grid-cols-3 mb-6">
-                  <TabsTrigger value="score" className="rounded-full">
-                    By Score
-                  </TabsTrigger>
-                  <TabsTrigger value="level" className="rounded-full">
-                    By Level
-                  </TabsTrigger>
-                  <TabsTrigger value="money" className="rounded-full">
-                    By Money
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="score">{renderChart()}</TabsContent>
-                <TabsContent value="level">{renderChart()}</TabsContent>
-                <TabsContent value="money">{renderChart()}</TabsContent>
-              </Tabs>
+              {isLoading ? (
+                <div className="flex justify-center items-center h-64">
+                  <p>Loading chart data...</p>
+                </div>
+              ) : (
+                <Tabs defaultValue="score" onValueChange={(value) => setChartType(value as any)}>
+                  <TabsList className="grid w-full grid-cols-3 mb-6">
+                    <TabsTrigger value="score" className="rounded-full">
+                      By Score
+                    </TabsTrigger>
+                    <TabsTrigger value="level" className="rounded-full">
+                      By Level
+                    </TabsTrigger>
+                    <TabsTrigger value="money" className="rounded-full">
+                      By Money
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="score">{renderChart()}</TabsContent>
+                  <TabsContent value="level">{renderChart()}</TabsContent>
+                  <TabsContent value="money">{renderChart()}</TabsContent>
+                </Tabs>
+              )}
             </CardContent>
           </Card>
 
@@ -378,32 +476,38 @@ export default function PlayersPage() {
 
           {/* Players Table */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead>maNguoiChoi</TableHead>
-                    <TableHead>soTien</TableHead>
-                    <TableHead>soKinhNghiem</TableHead>
-                    <TableHead>soGioY</TableHead>
-                    <TableHead>capDo</TableHead>
-                    <TableHead>diemSo</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPlayers.map((player) => (
-                    <TableRow key={player.id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium">{player.maNguoiChoi}</TableCell>
-                      <TableCell>{player.soTien}</TableCell>
-                      <TableCell>{player.soKinhNghiem}</TableCell>
-                      <TableCell>{player.soGioY}</TableCell>
-                      <TableCell>{player.capDo}</TableCell>
-                      <TableCell>{player.diemSo}</TableCell>
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <p>Loading players...</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead>maNguoiChoi</TableHead>
+                      <TableHead>soTien</TableHead>
+                      <TableHead>soKinhNghiem</TableHead>
+                      <TableHead>soGoiY</TableHead>
+                      <TableHead>capDo</TableHead>
+                      <TableHead>diemSo</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredPlayers.map((player) => (
+                      <TableRow key={player.maNguoiChoi} className="hover:bg-gray-50">
+                        <TableCell className="font-medium">{player.maNguoiChoi}</TableCell>
+                        <TableCell>{player.soTien}</TableCell>
+                        <TableCell>{player.soKinhNghiem}</TableCell>
+                        <TableCell>{player.soGoiY}</TableCell>
+                        <TableCell>{player.capDo}</TableCell>
+                        <TableCell>{player.diemSo}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
 
             {/* Pagination */}
             <div className="flex items-center justify-between px-4 py-4 border-t">

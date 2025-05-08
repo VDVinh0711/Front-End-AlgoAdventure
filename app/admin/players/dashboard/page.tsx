@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Play, ArrowLeft, BarChart2, PieChart, LineChart, Download, Layers } from "lucide-react"
+import { Play, ArrowLeft, BarChart2, PieChart, LineChart as LucideLineChart, Download, Layers } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -20,6 +20,7 @@ import {
   Legend,
   ResponsiveContainer,
   PieChart as RechartsPieChart,
+  LineChart
 } from "recharts"
 import Navigation from "@/components/ui/navigation"
 
@@ -123,10 +124,22 @@ export default function PlayerDashboardPage() {
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <XAxis dataKey="name" fontSize={12} tickLine={false} />
+            <YAxis fontSize={12} tickLine={false} />
+            <Tooltip 
+              contentStyle={{ 
+                fontSize: "14px", 
+                fontWeight: "500", 
+                backgroundColor: "white", 
+                borderRadius: "8px", 
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)" 
+              }} 
+            />
+            <Legend 
+              formatter={(value) => <span style={{ fontSize: "14px", color: "#444" }}>{value}</span>} 
+              verticalAlign="bottom" 
+              height={36}
+            />
             <Bar dataKey="value" fill="#f43f5e" radius={[4, 4, 0, 0]}>
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={getColorForIndex(index)} />
@@ -140,10 +153,22 @@ export default function PlayerDashboardPage() {
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <XAxis dataKey="name" fontSize={12} tickLine={false} />
+            <YAxis fontSize={12} tickLine={false} />
+            <Tooltip 
+              contentStyle={{ 
+                fontSize: "14px", 
+                fontWeight: "500", 
+                backgroundColor: "white", 
+                borderRadius: "8px", 
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)" 
+              }} 
+            />
+            <Legend 
+              formatter={(value) => <span style={{ fontSize: "14px", color: "#444" }}>{value}</span>} 
+              verticalAlign="bottom" 
+              height={36}
+            />
             <Line type="monotone" dataKey="value" stroke="#f43f5e" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
@@ -161,13 +186,31 @@ export default function PlayerDashboardPage() {
               outerRadius={100}
               fill="#f43f5e"
               dataKey="value"
+              innerRadius={0}
             >
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={getColorForIndex(index)} />
               ))}
             </Pie>
-            <Tooltip formatter={(value) => [`${value} players`, "Count"]} />
-            <Legend />
+            <Tooltip 
+              formatter={(value) => [`${value} players`, "Count"]}
+              contentStyle={{ 
+                fontSize: "14px", 
+                fontWeight: "500", 
+                backgroundColor: "white", 
+                borderRadius: "8px", 
+                boxShadow: "0 2px 8px rgba(0,0,0,0.15)" 
+              }} 
+            />
+            <Legend 
+              formatter={(value) => <span style={{ fontSize: "14px", color: "#444" }}>{value}</span>}
+              layout="horizontal"
+              verticalAlign="bottom"
+              align="center"
+              iconSize={12}
+              iconType="circle"
+              wrapperStyle={{ paddingTop: "20px" }}
+            />
           </RechartsPieChart>
         </ResponsiveContainer>
       )
@@ -217,23 +260,13 @@ export default function PlayerDashboardPage() {
           </div>
 
           {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-500">Total Players</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">{playerData.length}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Active Players</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-rose-500">
-                  {playerData.filter((player) => player.capDo > 0).length}
-                </div>
               </CardContent>
             </Card>
             <Card>
@@ -286,7 +319,7 @@ export default function PlayerDashboardPage() {
                       }
                       onClick={() => setVisualizationType("line")}
                     >
-                      <LineChart className="h-4 w-4" />
+                      <LucideLineChart className="h-4 w-4" />
                     </Button>
                     <Button
                       variant={visualizationType === "pie" ? "default" : "ghost"}
@@ -299,7 +332,7 @@ export default function PlayerDashboardPage() {
                       <PieChart className="h-4 w-4" />
                     </Button>
                   </div>
-                  <Button variant="outline" size="sm" className="text-gray-600">
+                  <Button variant="outline" size="sm" className="text-gray-600" disabled>
                     <Download className="h-4 w-4 mr-1" />
                     Export
                   </Button>
