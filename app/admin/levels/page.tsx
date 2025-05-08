@@ -1,0 +1,563 @@
+"use client"
+
+import React, { useState } from "react"
+import Link from "next/link"
+import { Play, ArrowLeft, Plus, Search, Filter, Eye, EyeOff, ChevronDown, ChevronUp } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+
+// Define the types for our level data
+interface Point {
+  x: number
+  y: number
+}
+
+interface BlockData {
+  BlockType: number
+  IsHasCoin: boolean
+  PointMap: Point
+}
+
+interface LevelData {
+  DirPlayerStart: Point
+  PointPlayerStart: Point
+  ListDataMap: BlockData[]
+  CoinInGame: number
+}
+
+// Sample level data
+const sampleLevelData: LevelData = {
+  DirPlayerStart: { x: 0, y: 1 },
+  ListDataMap: [
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 0 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 1 } },
+    { BlockType: 2, IsHasCoin: false, PointMap: { x: 0, y: 2 } },
+    { BlockType: 2, IsHasCoin: false, PointMap: { x: 0, y: 3 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 4 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 5 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 0 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 1 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 2 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 3 } },
+    { BlockType: 3, IsHasCoin: false, PointMap: { x: 1, y: 4 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 5 } },
+    { BlockType: 0, IsHasCoin: false, PointMap: { x: 2, y: 0 } },
+    { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 1 } },
+    { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 2 } },
+    { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 3 } },
+    { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 4 } },
+    { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 5 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 0 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 1 } },
+    { BlockType: 3, IsHasCoin: false, PointMap: { x: 3, y: 2 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 3 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 4 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 5 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 0 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 1 } },
+    { BlockType: 2, IsHasCoin: false, PointMap: { x: 4, y: 2 } },
+    { BlockType: 2, IsHasCoin: false, PointMap: { x: 4, y: 3 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 4 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 5 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 0 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 1 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 2 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 3 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 4 } },
+    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 5 } },
+  ],
+  PointPlayerStart: { x: 2, y: 0 },
+  CoinInGame: 3,
+}
+
+// Mock data for levels
+const levelsData = [
+  {
+    maCapDo: 1,
+    duLieuCapDo: JSON.stringify({
+      DirPlayerStart: { x: 0, y: 1 },
+      ListDataMap: [
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 0 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 1 } },
+        { BlockType: 0, IsHasCoin: false, PointMap: { x: 0, y: 2 } },
+        { BlockType: 0, IsHasCoin: false, PointMap: { x: 0, y: 3 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 4 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 5 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 0 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 1 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 2 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 3 } },
+        { BlockType: 3, IsHasCoin: false, PointMap: { x: 1, y: 4 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 5 } },
+        { BlockType: 0, IsHasCoin: false, PointMap: { x: 2, y: 0 } },
+        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 1 } },
+        { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 2 } },
+        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 3 } },
+        { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 4 } },
+        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 5 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 0 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 1 } },
+        { BlockType: 3, IsHasCoin: false, PointMap: { x: 3, y: 2 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 3 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 4 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 5 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 0 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 1 } },
+        { BlockType: 0, IsHasCoin: false, PointMap: { x: 4, y: 2 } },
+        { BlockType: 0, IsHasCoin: false, PointMap: { x: 4, y: 3 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 4 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 5 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 0 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 1 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 2 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 3 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 4 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 5 } },
+      ],
+      PointPlayerStart: { x: 2, y: 0 },
+      CoinInGame: 3,
+    }),
+    thoiGianCapNhat: "2025-05-01 18:42:00.000000",
+  },
+  {
+    maCapDo: 2,
+    duLieuCapDo: JSON.stringify(sampleLevelData),
+    thoiGianCapNhat: "2025-05-01 18:42:00.000000",
+  },
+  {
+    maCapDo: 3,
+    duLieuCapDo: JSON.stringify({
+      DirPlayerStart: { x: 0, y: 1 },
+      ListDataMap: [
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 0 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 1 } },
+        { BlockType: 5, IsHasCoin: false, PointMap: { x: 0, y: 2 } },
+        { BlockType: 5, IsHasCoin: false, PointMap: { x: 0, y: 3 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 4 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 5 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 0 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 1 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 2 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 3 } },
+        { BlockType: 3, IsHasCoin: false, PointMap: { x: 1, y: 4 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 5 } },
+        { BlockType: 0, IsHasCoin: false, PointMap: { x: 2, y: 0 } },
+        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 1 } },
+        { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 2 } },
+        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 3 } },
+        { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 4 } },
+        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 5 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 0 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 1 } },
+        { BlockType: 3, IsHasCoin: false, PointMap: { x: 3, y: 2 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 3 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 4 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 5 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 0 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 1 } },
+        { BlockType: 5, IsHasCoin: false, PointMap: { x: 4, y: 2 } },
+        { BlockType: 5, IsHasCoin: false, PointMap: { x: 4, y: 3 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 4 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 5 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 0 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 1 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 2 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 3 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 4 } },
+        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 5 } },
+      ],
+      PointPlayerStart: { x: 2, y: 0 },
+      CoinInGame: 3,
+    }),
+    thoiGianCapNhat: "2025-05-01 18:42:00.000000",
+  },
+]
+
+export default function LevelsPage() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [expandedLevel, setExpandedLevel] = useState<number | null>(null)
+  const [showJsonData, setShowJsonData] = useState<number | null>(null)
+
+  // Filter levels based on search term
+  const filteredLevels = levelsData.filter((level) => level.maCapDo.toString().includes(searchTerm))
+
+  // Toggle expanded level
+  const toggleExpandLevel = (levelId: number) => {
+    if (expandedLevel === levelId) {
+      setExpandedLevel(null)
+    } else {
+      setExpandedLevel(levelId)
+    }
+  }
+
+  // Toggle JSON data visibility
+  const toggleJsonData = (levelId: number, e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent the row from expanding/collapsing
+    if (showJsonData === levelId) {
+      setShowJsonData(null)
+    } else {
+      setShowJsonData(levelId)
+    }
+  }
+
+  // Get block color based on block type
+  const getBlockColor = (blockType: number) => {
+    switch (blockType) {
+      case 1:
+        return "bg-white border border-gray-200"
+      case 2:
+        return "bg-rose-200"
+      case 3:
+        return "bg-yellow-200"
+      case 4:
+        return "bg-green-200"
+      case 5:
+        return "bg-red-200"
+      case 6:
+        return "bg-blue-200"
+      default:
+        return "bg-gray-200"
+    }
+  }
+
+  // Render the level grid
+  const renderLevelGrid = (levelData: LevelData) => {
+    // Create a 6x6 grid
+    const grid = Array(6)
+      .fill(0)
+      .map(() => Array(6).fill(null))
+
+    // Fill the grid with block data
+    levelData.ListDataMap.forEach((block) => {
+      const { x, y } = block.PointMap
+      grid[y][x] = block
+    })
+
+    return (
+      <div className="grid grid-cols-6 gap-1 w-full max-w-md mx-auto my-4">
+        {grid.map((row, rowIndex) =>
+          row.map((block, colIndex) => {
+            if (!block) return <div key={`${rowIndex}-${colIndex}`} className="aspect-square bg-gray-100"></div>
+
+            const isPlayerStart = levelData.PointPlayerStart.x === colIndex && levelData.PointPlayerStart.y === rowIndex
+
+            return (
+              <div
+                key={`${rowIndex}-${colIndex}`}
+                className={`aspect-square ${getBlockColor(block.BlockType)} relative flex items-center justify-center`}
+              >
+                {/* Player position indicator */}
+                {isPlayerStart && <div className="absolute w-4 h-4 rounded-full bg-orange-500 z-10"></div>}
+
+                {/* Coin indicator */}
+                {block.IsHasCoin && <div className="absolute w-3 h-3 rounded-full bg-yellow-400 z-5"></div>}
+              </div>
+            )
+          }),
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-rose-50">
+      {/* Navigation */}
+      <header className="container mx-auto py-4 px-4 flex justify-between items-center">
+        <Link href="/" className="flex items-center">
+          <div className="relative h-10 w-20">
+            <div className="absolute inset-0 bg-rose-500 rounded-full flex items-center justify-center">
+              <Play className="h-5 w-5 text-white ml-1" />
+            </div>
+            <div
+              className="absolute inset-0 border-2 border-rose-500 rounded-full"
+              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
+            ></div>
+          </div>
+          <span className="text-rose-500 font-bold ml-2 text-sm">GAMETAMIN</span>
+        </Link>
+
+        <nav className="hidden md:flex items-center space-x-2">
+          <Link href="/">
+            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
+              Home
+            </Button>
+          </Link>
+          <Link href="/about">
+            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
+              About
+            </Button>
+          </Link>
+          <Link href="/games">
+            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
+              Game
+            </Button>
+          </Link>
+          <Link href="/recruit">
+            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
+              Recruit
+            </Button>
+          </Link>
+          <Link href="/contact">
+            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
+              Contact
+            </Button>
+          </Link>
+          <Link href="/admin">
+            <Button variant="default" className="bg-rose-500 hover:bg-rose-600 rounded-full">
+              Admin
+            </Button>
+          </Link>
+          <Link href="/login">
+            <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full ml-2">
+              Login
+            </Button>
+          </Link>
+        </nav>
+
+        <div className="flex md:hidden items-center space-x-2">
+          <Link href="/login">
+            <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full">
+              Login
+            </Button>
+          </Link>
+          <Button variant="outline" size="icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-6 w-6"
+            >
+              <line x1="4" x2="20" y1="12" y2="12" />
+              <line x1="4" x2="20" y1="6" y2="6" />
+              <line x1="4" x2="20" y1="18" y2="18" />
+            </svg>
+          </Button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Breadcrumb */}
+          <div className="flex items-center mb-6">
+            <Link href="/admin" className="flex items-center text-rose-500 hover:text-rose-600">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back to Dashboard
+            </Link>
+          </div>
+
+          {/* Page Header */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-rose-500">Manage Levels</h1>
+              <p className="text-gray-600 mt-1">View and manage game levels</p>
+            </div>
+            <div className="mt-4 md:mt-0">
+              <Link href="/admin/levels/create">
+                <Button className="bg-rose-500 hover:bg-rose-600 text-white rounded-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add New Level
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Legend */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Block Type Legend</CardTitle>
+              <CardDescription>Color coding for different block types</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-white border border-gray-200"></div>
+                  <span>Type 1 (White)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-rose-200"></div>
+                  <span>Type 2 (Pink)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-yellow-200"></div>
+                  <span>Type 3 (Yellow)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-green-200"></div>
+                  <span>Type 4 (Green)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-red-200"></div>
+                  <span>Type 5 (Red)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-blue-200"></div>
+                  <span>Type 6 (Blue)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-white border border-gray-200 relative flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                  </div>
+                  <span>Player Position</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-white border border-gray-200 relative flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                  </div>
+                  <span>Coin Position</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Search and Filter */}
+          <div className="bg-white p-4 rounded-xl shadow-sm mb-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                <Input
+                  placeholder="Search by level ID..."
+                  className="pl-10 rounded-full"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <Button variant="outline" className="rounded-full">
+                <Filter className="h-4 w-4 mr-2" />
+                Filter
+              </Button>
+            </div>
+          </div>
+
+          {/* Levels Table */}
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="w-[80px]">Level ID</TableHead>
+                    <TableHead>Last Updated</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredLevels.map((level) => {
+                    const levelData: LevelData = JSON.parse(level.duLieuCapDo)
+                    const isExpanded = expandedLevel === level.maCapDo
+                    const showJson = showJsonData === level.maCapDo
+
+                    return (
+                      <React.Fragment key={level.maCapDo}>
+                        <TableRow
+                          className="hover:bg-gray-50 cursor-pointer"
+                          onClick={() => toggleExpandLevel(level.maCapDo)}
+                        >
+                          <TableCell className="font-medium">
+                            <div className="flex items-center">
+                              {isExpanded ? (
+                                <ChevronDown className="h-4 w-4 mr-2 text-gray-500" />
+                              ) : (
+                                <ChevronUp className="h-4 w-4 mr-2 text-gray-500" />
+                              )}
+                              {level.maCapDo}
+                            </div>
+                          </TableCell>
+                          <TableCell>{level.thoiGianCapNhat}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-gray-500"
+                                onClick={(e) => toggleJsonData(level.maCapDo, e)}
+                              >
+                                {showJson ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                <span className="ml-1">{showJson ? "Hide JSON" : "View JSON"}</span>
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-rose-500 border-rose-500 hover:bg-rose-50"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  // Edit functionality would go here
+                                }}
+                              >
+                                Edit
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+
+                        {/* Expanded level view */}
+                        {isExpanded && (
+                          <TableRow>
+                            <TableCell colSpan={3} className="p-0 border-t-0">
+                              <div className="bg-gray-50 p-4">
+                                <div className="flex flex-col md:flex-row gap-6">
+                                  <div className="flex-1">
+                                    <h3 className="text-lg font-medium mb-2">Level {level.maCapDo} Grid</h3>
+                                    {renderLevelGrid(levelData)}
+                                    <div className="mt-2 text-sm text-gray-500">
+                                      <p>Total Coins: {levelData.CoinInGame}</p>
+                                      <p>
+                                        Player Start: ({levelData.PointPlayerStart.x}, {levelData.PointPlayerStart.y})
+                                      </p>
+                                      <p>
+                                        Direction: ({levelData.DirPlayerStart.x}, {levelData.DirPlayerStart.y})
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  {showJson && (
+                                    <div className="flex-1">
+                                      <h3 className="text-lg font-medium mb-2">Level JSON Data</h3>
+                                      <div className="bg-gray-900 text-gray-100 p-4 rounded-md overflow-auto max-h-[400px]">
+                                        <pre className="text-xs whitespace-pre-wrap">
+                                          {JSON.stringify(levelData, null, 2)}
+                                        </pre>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between px-4 py-4 border-t">
+              <div className="text-sm text-gray-500">
+                Showing <span className="font-medium">1</span> to{" "}
+                <span className="font-medium">{filteredLevels.length}</span> of{" "}
+                <span className="font-medium">{filteredLevels.length}</span> levels
+              </div>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm" className="rounded-full" disabled>
+                  Previous
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-full" disabled>
+                  Next
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}
