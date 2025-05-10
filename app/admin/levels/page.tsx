@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Play, ArrowLeft, Plus, Search, Filter, Eye, EyeOff, ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,6 +38,7 @@ interface Level {
 }
 
 export default function LevelsPage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("")
   const [expandedLevel, setExpandedLevel] = useState<number | null>(null)
   const [showJsonData, setShowJsonData] = useState<number | null>(null)
@@ -144,6 +146,12 @@ export default function LevelsPage() {
       </div>
     )
   }
+
+  // Handle edit button click
+  const handleEditClick = (levelId: number, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent the row from expanding
+    router.push(`/admin/levels/edit/${levelId}`);
+  };
 
   return (
     <div className="min-h-screen bg-rose-50">
@@ -307,10 +315,7 @@ export default function LevelsPage() {
                                     variant="outline"
                                     size="sm"
                                     className="text-rose-500 border-rose-500 hover:bg-rose-50"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      // Edit functionality would go here
-                                    }}
+                                    onClick={(e) => handleEditClick(level.maCapDo, e)}
                                   >
                                     Edit
                                   </Button>
