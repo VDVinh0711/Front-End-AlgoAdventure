@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { Play, ArrowLeft, Plus, Search, Filter, Eye, EyeOff, ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Navigation from "@/components/ui/navigation"
+import { ApiController } from "@/app/services/apiController"
 
 // Define the types for our level data
 interface Point {
@@ -28,161 +29,43 @@ interface LevelData {
   CoinInGame: number
 }
 
-// Sample level data
-const sampleLevelData: LevelData = {
-  DirPlayerStart: { x: 0, y: 1 },
-  ListDataMap: [
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 0 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 1 } },
-    { BlockType: 2, IsHasCoin: false, PointMap: { x: 0, y: 2 } },
-    { BlockType: 2, IsHasCoin: false, PointMap: { x: 0, y: 3 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 4 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 5 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 0 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 1 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 2 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 3 } },
-    { BlockType: 3, IsHasCoin: false, PointMap: { x: 1, y: 4 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 5 } },
-    { BlockType: 0, IsHasCoin: false, PointMap: { x: 2, y: 0 } },
-    { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 1 } },
-    { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 2 } },
-    { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 3 } },
-    { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 4 } },
-    { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 5 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 0 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 1 } },
-    { BlockType: 3, IsHasCoin: false, PointMap: { x: 3, y: 2 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 3 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 4 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 5 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 0 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 1 } },
-    { BlockType: 2, IsHasCoin: false, PointMap: { x: 4, y: 2 } },
-    { BlockType: 2, IsHasCoin: false, PointMap: { x: 4, y: 3 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 4 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 5 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 0 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 1 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 2 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 3 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 4 } },
-    { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 5 } },
-  ],
-  PointPlayerStart: { x: 2, y: 0 },
-  CoinInGame: 3,
+interface Level {
+  maCapDo: number
+  duLieuCapDo: string
+  thoiGianCapNhat: string
+  CAPDONGUOICHOIs: any[]
 }
-
-// Mock data for levels
-const levelsData = [
-  {
-    maCapDo: 1,
-    duLieuCapDo: JSON.stringify({
-      DirPlayerStart: { x: 0, y: 1 },
-      ListDataMap: [
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 0 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 1 } },
-        { BlockType: 0, IsHasCoin: false, PointMap: { x: 0, y: 2 } },
-        { BlockType: 0, IsHasCoin: false, PointMap: { x: 0, y: 3 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 4 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 5 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 0 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 1 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 2 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 3 } },
-        { BlockType: 3, IsHasCoin: false, PointMap: { x: 1, y: 4 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 5 } },
-        { BlockType: 0, IsHasCoin: false, PointMap: { x: 2, y: 0 } },
-        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 1 } },
-        { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 2 } },
-        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 3 } },
-        { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 4 } },
-        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 5 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 0 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 1 } },
-        { BlockType: 3, IsHasCoin: false, PointMap: { x: 3, y: 2 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 3 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 4 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 5 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 0 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 1 } },
-        { BlockType: 0, IsHasCoin: false, PointMap: { x: 4, y: 2 } },
-        { BlockType: 0, IsHasCoin: false, PointMap: { x: 4, y: 3 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 4 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 5 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 0 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 1 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 2 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 3 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 4 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 5 } },
-      ],
-      PointPlayerStart: { x: 2, y: 0 },
-      CoinInGame: 3,
-    }),
-    thoiGianCapNhat: "2025-05-01 18:42:00.000000",
-  },
-  {
-    maCapDo: 2,
-    duLieuCapDo: JSON.stringify(sampleLevelData),
-    thoiGianCapNhat: "2025-05-01 18:42:00.000000",
-  },
-  {
-    maCapDo: 3,
-    duLieuCapDo: JSON.stringify({
-      DirPlayerStart: { x: 0, y: 1 },
-      ListDataMap: [
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 0 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 1 } },
-        { BlockType: 5, IsHasCoin: false, PointMap: { x: 0, y: 2 } },
-        { BlockType: 5, IsHasCoin: false, PointMap: { x: 0, y: 3 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 4 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 0, y: 5 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 0 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 1 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 2 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 3 } },
-        { BlockType: 3, IsHasCoin: false, PointMap: { x: 1, y: 4 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 1, y: 5 } },
-        { BlockType: 0, IsHasCoin: false, PointMap: { x: 2, y: 0 } },
-        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 1 } },
-        { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 2 } },
-        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 3 } },
-        { BlockType: 4, IsHasCoin: false, PointMap: { x: 2, y: 4 } },
-        { BlockType: 0, IsHasCoin: true, PointMap: { x: 2, y: 5 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 0 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 1 } },
-        { BlockType: 3, IsHasCoin: false, PointMap: { x: 3, y: 2 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 3 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 4 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 3, y: 5 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 0 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 1 } },
-        { BlockType: 5, IsHasCoin: false, PointMap: { x: 4, y: 2 } },
-        { BlockType: 5, IsHasCoin: false, PointMap: { x: 4, y: 3 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 4 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 4, y: 5 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 0 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 1 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 2 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 3 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 4 } },
-        { BlockType: 1, IsHasCoin: false, PointMap: { x: 5, y: 5 } },
-      ],
-      PointPlayerStart: { x: 2, y: 0 },
-      CoinInGame: 3,
-    }),
-    thoiGianCapNhat: "2025-05-01 18:42:00.000000",
-  },
-]
 
 export default function LevelsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [expandedLevel, setExpandedLevel] = useState<number | null>(null)
   const [showJsonData, setShowJsonData] = useState<number | null>(null)
+  const [levels, setLevels] = useState<Level[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchLevels = async () => {
+      try {
+        setIsLoading(true)
+        const apiController = new ApiController()
+        const data = await apiController.get<Level[]>('/CapDo')
+        setLevels(data || [])
+        setError(null)
+      } catch (err) {
+        console.error("Error fetching levels:", err)
+        setError(err instanceof Error ? err.message : 'An error occurred when fetching levels')
+        setLevels([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchLevels()
+  }, [])
 
   // Filter levels based on search term
-  const filteredLevels = levelsData.filter((level) => level.maCapDo.toString().includes(searchTerm))
+  const filteredLevels = levels.filter((level) => level.maCapDo.toString().includes(searchTerm))
 
   // Toggle expanded level
   const toggleExpandLevel = (levelId: number) => {
@@ -283,6 +166,11 @@ export default function LevelsPage() {
             <div>
               <h1 className="text-3xl font-bold text-rose-500">Manage Levels</h1>
               <p className="text-gray-600 mt-1">View and manage game levels</p>
+              {error && (
+                <div className="mt-2 text-sm text-red-500 bg-red-50 p-2 rounded-md">
+                  {error}
+                </div>
+              )}
             </div>
             <div className="mt-4 md:mt-0">
               <Link href="/admin/levels/create">
@@ -361,125 +249,144 @@ export default function LevelsPage() {
             </div>
           </div>
 
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex justify-center items-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-500"></div>
+            </div>
+          )}
+
           {/* Levels Table */}
-          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="w-[80px]">Level ID</TableHead>
-                    <TableHead>Last Updated</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLevels.map((level) => {
-                    const levelData: LevelData = JSON.parse(level.duLieuCapDo)
-                    const isExpanded = expandedLevel === level.maCapDo
-                    const showJson = showJsonData === level.maCapDo
+          {!isLoading && !error && (
+            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="w-[80px]">Level ID</TableHead>
+                      <TableHead>Last Updated</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredLevels.length > 0 ? (
+                      filteredLevels.map((level) => {
+                        const levelData: LevelData = JSON.parse(level.duLieuCapDo)
+                        const isExpanded = expandedLevel === level.maCapDo
+                        const showJson = showJsonData === level.maCapDo
 
-                    return (
-                      <React.Fragment key={level.maCapDo}>
-                        <TableRow
-                          className="hover:bg-gray-50 cursor-pointer"
-                          onClick={() => toggleExpandLevel(level.maCapDo)}
-                        >
-                          <TableCell className="font-medium">
-                            <div className="flex items-center">
-                              {isExpanded ? (
-                                <ChevronDown className="h-4 w-4 mr-2 text-gray-500" />
-                              ) : (
-                                <ChevronUp className="h-4 w-4 mr-2 text-gray-500" />
-                              )}
-                              {level.maCapDo}
-                            </div>
-                          </TableCell>
-                          <TableCell>{level.thoiGianCapNhat}</TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-gray-500"
-                                onClick={(e) => toggleJsonData(level.maCapDo, e)}
-                              >
-                                {showJson ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                <span className="ml-1">{showJson ? "Hide JSON" : "View JSON"}</span>
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-rose-500 border-rose-500 hover:bg-rose-50"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  // Edit functionality would go here
-                                }}
-                              >
-                                Edit
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
+                        return (
+                          <React.Fragment key={level.maCapDo}>
+                            <TableRow
+                              className="hover:bg-gray-50 cursor-pointer"
+                              onClick={() => toggleExpandLevel(level.maCapDo)}
+                            >
+                              <TableCell className="font-medium">
+                                <div className="flex items-center">
+                                  {isExpanded ? (
+                                    <ChevronDown className="h-4 w-4 mr-2 text-gray-500" />
+                                  ) : (
+                                    <ChevronUp className="h-4 w-4 mr-2 text-gray-500" />
+                                  )}
+                                  {level.maCapDo}
+                                </div>
+                              </TableCell>
+                              <TableCell>{new Date(level.thoiGianCapNhat).toLocaleString()}</TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-gray-500"
+                                    onClick={(e) => toggleJsonData(level.maCapDo, e)}
+                                  >
+                                    {showJson ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    <span className="ml-1">{showJson ? "Hide JSON" : "View JSON"}</span>
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-rose-500 border-rose-500 hover:bg-rose-50"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      // Edit functionality would go here
+                                    }}
+                                  >
+                                    Edit
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
 
-                        {/* Expanded level view */}
-                        {isExpanded && (
-                          <TableRow>
-                            <TableCell colSpan={3} className="p-0 border-t-0">
-                              <div className="bg-gray-50 p-4">
-                                <div className="flex flex-col md:flex-row gap-6">
-                                  <div className="flex-1">
-                                    <h3 className="text-lg font-medium mb-2">Level {level.maCapDo} Grid</h3>
-                                    {renderLevelGrid(levelData)}
-                                    <div className="mt-2 text-sm text-gray-500">
-                                      <p>Total Coins: {levelData.CoinInGame}</p>
-                                      <p>
-                                        Player Start: ({levelData.PointPlayerStart.x}, {levelData.PointPlayerStart.y})
-                                      </p>
-                                      <p>
-                                        Direction: ({levelData.DirPlayerStart.x}, {levelData.DirPlayerStart.y})
-                                      </p>
+                            {/* Expanded level view */}
+                            {isExpanded && (
+                              <TableRow>
+                                <TableCell colSpan={3} className="p-0 border-t-0">
+                                  <div className="bg-gray-50 p-4">
+                                    <div className="flex flex-col md:flex-row gap-6">
+                                      <div className="flex-1">
+                                        <h3 className="text-lg font-medium mb-2">Level {level.maCapDo} Grid</h3>
+                                        {renderLevelGrid(levelData)}
+                                        <div className="mt-2 text-sm text-gray-500">
+                                          <p>Total Coins: {levelData.CoinInGame}</p>
+                                          <p>
+                                            Player Start: ({levelData.PointPlayerStart.x}, {levelData.PointPlayerStart.y})
+                                          </p>
+                                          <p>
+                                            Direction: ({levelData.DirPlayerStart.x}, {levelData.DirPlayerStart.y})
+                                          </p>
+                                        </div>
+                                      </div>
+
+                                      {showJson && (
+                                        <div className="flex-1">
+                                          <h3 className="text-lg font-medium mb-2">Level JSON Data</h3>
+                                          <div className="bg-gray-900 text-gray-100 p-4 rounded-md overflow-auto max-h-[400px]">
+                                            <pre className="text-xs whitespace-pre-wrap">
+                                              {JSON.stringify(levelData, null, 2)}
+                                            </pre>
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
-
-                                  {showJson && (
-                                    <div className="flex-1">
-                                      <h3 className="text-lg font-medium mb-2">Level JSON Data</h3>
-                                      <div className="bg-gray-900 text-gray-100 p-4 rounded-md overflow-auto max-h-[400px]">
-                                        <pre className="text-xs whitespace-pre-wrap">
-                                          {JSON.stringify(levelData, null, 2)}
-                                        </pre>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </React.Fragment>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Pagination */}
-            <div className="flex items-center justify-between px-4 py-4 border-t">
-              <div className="text-sm text-gray-500">
-                Showing <span className="font-medium">1</span> to{" "}
-                <span className="font-medium">{filteredLevels.length}</span> of{" "}
-                <span className="font-medium">{filteredLevels.length}</span> levels
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </React.Fragment>
+                        )
+                      })
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center py-8 text-gray-500">
+                          {searchTerm ? "No levels found matching your search" : "No level data available"}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
               </div>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="rounded-full" disabled>
-                  Previous
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full" disabled>
-                  Next
-                </Button>
-              </div>
+
+              {/* Pagination */}
+              {filteredLevels.length > 0 && (
+                <div className="flex items-center justify-between px-4 py-4 border-t">
+                  <div className="text-sm text-gray-500">
+                    Showing <span className="font-medium">1</span> to{" "}
+                    <span className="font-medium">{filteredLevels.length}</span> of{" "}
+                    <span className="font-medium">{levels.length}</span> levels
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button variant="outline" size="sm" className="rounded-full" disabled>
+                      Previous
+                    </Button>
+                    <Button variant="outline" size="sm" className="rounded-full" disabled>
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </main>
     </div>
