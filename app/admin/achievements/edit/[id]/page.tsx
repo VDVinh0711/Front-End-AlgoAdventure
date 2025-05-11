@@ -94,8 +94,6 @@ export default function EditAchievementPage() {
     setIsSaving(true)
     setError(null);
     try {
-      // console.log("Achievement Data:", achievement.LoaiNhiemVu);
-      // console.log("Achievement Data:", achievement.LoaiPhanThuong);
      await apiController.put<AchievementData>(`/NhiemVu/${achievementId}`, 
       {
         "TenNhiemVu": achievement.TenNhiemVu,

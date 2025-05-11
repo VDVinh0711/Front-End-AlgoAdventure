@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import Navigation from "@/components/ui/navigation"
 import { ApiController } from "@/app/services/apiController"
+import { useToast } from "@/hooks/use-toast"
 
 // Define the types for our level data
 interface Point {
@@ -79,6 +80,7 @@ export default function EditLevelPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Validate ID on mount
   useEffect(() => {
@@ -235,7 +237,6 @@ export default function EditLevelPage() {
     }));
   };
 
-  // Clear the grid
   const handleClearGrid = () => {
     if (confirm("Are you sure you want to clear the grid? This action cannot be undone.")) {
       const clearedBlocks = levelData.ListDataMap.map((block) => ({
@@ -260,28 +261,39 @@ export default function EditLevelPage() {
 
     try {
       setIsSaving(true);
-      
-      // Format the level data as a JSON string
       const formattedLevelData = JSON.stringify(levelData);
-      
-      // Create API controller
       const apiController = new ApiController();
       
-      // Create the payload for API - include the level ID
-      const payload = {
-        maCapDo: levelId,
-        duLieuCapDo: formattedLevelData,
-        thoiGianCapNhat: new Date().toISOString()
-      };
+      await apiController.put<LevelData>(`/CapDo/${levelId}`,
+        {
+          "duLieuCapDo": formattedLevelData
+        });
       
-      // Send the data to the API
-      await apiController.put(`/CapDo/${levelId}`, payload);
       
-      alert(`Level ${levelId} updated successfully!`);
-      router.push('/admin/levels'); // Redirect to levels page after saving
+        toast({
+          title: "✅ Success!",
+          description: `Level "${levelId}" has been updated successfully.`,
+          variant: "default",
+          className: "bg-green-100 border-green-500 border",
+        });
+
+        setTimeout(() => {
+          router.push("/admin/levels");
+        }, 3000);
+      
     } catch (error) {
       console.error("Error updating level:", error);
       setError(error instanceof Error ? error.message : "An error occurred when updating the level");
+      
+      toast({
+        title: "❌ Update Failed",
+        description: "Could not update level. Please check your connection and try again.",
+        variant: "destructive",
+        className: "bg-red-100 border-red-500 border text-black",
+        duration: 5000,
+      });
+    
+    
     } finally {
       setIsSaving(false);
     }
