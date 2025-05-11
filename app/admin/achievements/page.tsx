@@ -72,15 +72,15 @@ export default function AchievementsPage() {
           <div className="flex items-center mb-6">
             <Link href="/admin" className="flex items-center text-rose-500 hover:text-rose-600">
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Dashboard
+               Quay Lại Trang Chủ
             </Link>
           </div>
 
           {/* Page Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-rose-500">Manage Achievements</h1>
-              <p className="text-gray-600 mt-1">View and update game achievements</p>
+              <h1 className="text-3xl font-bold text-rose-500">Quản Lý Nhiệm Vụ</h1>
+              <p className="text-gray-600 mt-1">Xem và cập nhật nhiệm vụ trong trò chơi</p>
             </div>
             <div className="mt-4 md:mt-0">
               <Button 
@@ -88,7 +88,7 @@ export default function AchievementsPage() {
                 onClick={() => router.push('/admin/achievements/create')}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add New Achievement
+                Thêm Nhiệm Vụ Mới
               </Button>
             </div>
           </div>
@@ -99,7 +99,7 @@ export default function AchievementsPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
-                  placeholder="Search achievements..."
+                  placeholder="Tìm kiếm nhiệm vụ..."
                   className="pl-10 rounded-full"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -107,7 +107,7 @@ export default function AchievementsPage() {
               </div>
               <Button variant="outline" className="rounded-full">
                 <Filter className="h-4 w-4 mr-2" />
-                Filter
+                Lọc
               </Button>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default function AchievementsPage() {
           {/* Achievements Table */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             {isLoading ? (
-              <div className="p-8 text-center">Loading achievements...</div>
+              <div className="p-8 text-center">Đang tải nhiệm vụ...</div>
             ) : error ? (
               <div className="p-8 text-center text-red-500">{error}</div>
             ) : (
@@ -130,7 +130,7 @@ export default function AchievementsPage() {
                       <TableHead>Mốc Yêu Cầu</TableHead>
                       <TableHead>Loại Nhiệm Vụ</TableHead>
                       <TableHead>Loại Phần Thưởng</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="text-right">Hành Động</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -151,7 +151,7 @@ export default function AchievementsPage() {
                             onClick={() => handleUpdateClick(achievement.MaNhiemVu || 0)}
                           >
                             <Pencil className="h-4 w-4 mr-1" />
-                            Update
+                            Cập Nhật
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -164,15 +164,15 @@ export default function AchievementsPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between px-4 py-4 border-t">
               <div className="text-sm text-gray-500">
-                Showing <span className="font-medium">1</span> to <span className="font-medium">{filteredAchievements.length}</span> of{" "}
-                <span className="font-medium">{filteredAchievements.length}</span> achievements
+                Hiển thị <span className="font-medium">1</span> đến <span className="font-medium">{filteredAchievements.length}</span> của{" "}
+                <span className="font-medium">{filteredAchievements.length}</span> nhiệm vụ
               </div>
               <div className="flex space-x-2">
                 <Button variant="outline" size="sm" className="rounded-full" disabled>
-                  Previous
+                  Trang Trước
                 </Button>
                 <Button variant="outline" size="sm" className="rounded-full" disabled>
-                  Next
+                  Trang Tiếp
                 </Button>
               </div>
             </div>

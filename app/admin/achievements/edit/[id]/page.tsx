@@ -105,8 +105,8 @@ export default function EditAchievementPage() {
      );
      
      toast({
-       title: "✅ Success!",
-       description: `Achievement "${achievement.TenNhiemVu}" has been updated successfully.`,
+       title: "✅ Thành Công!",
+       description: `Nhiệm Vụ "${achievement.TenNhiemVu}" đã được cập nhật thành công.`,
        variant: "default",
        className: "bg-green-100 border-green-500 border",
      });
@@ -120,8 +120,8 @@ export default function EditAchievementPage() {
       setError("Can't Update AchievmentData");
       
       toast({
-        title: "❌ Update Failed",
-        description: "Could not update achievement. Please check your connection and try again.",
+        title: "❌ Cập Nhật Thất Bại",
+        description: "Không thể cập nhật nhiệm vụ. Vui lòng kiểm tra kết nối và thử lại.",
         variant: "destructive",
         className: "bg-red-100 border-red-500 border text-black",
         duration: 5000,
@@ -154,14 +154,14 @@ export default function EditAchievementPage() {
           <div className="flex items-center mb-6">
             <Link href="/admin/achievements" className="flex items-center text-rose-500 hover:text-rose-600">
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Achievements
+              Quay Lại Trang Quản Lý Nhiệm Vụ
             </Link>
           </div>
 
           {/* Page Header */}
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-rose-500">Update Achievement</h1>
-            <p className="text-gray-600 mt-1">Edit achievement details</p>
+            <h1 className="text-3xl font-bold text-rose-500">Cập Nhật Nhiệm Vụ</h1>
+            <p className="text-gray-600 mt-1">Chỉnh sửa chi tiết nhiệm vụ</p>
           </div>
 
           {/* Edit Form */}
@@ -266,12 +266,12 @@ export default function EditAchievementPage() {
                 <div className="flex gap-2">
                   <Link href="/admin/achievements">
                     <Button variant="outline" disabled={isLoading}>
-                      Cancel
+                      Hủy Bỏ
                     </Button>
                   </Link>
                   <Button type="submit" className="bg-rose-500 hover:bg-rose-600" disabled={isLoading}>
                     <Save className="h-4 w-4 mr-2" />
-                    {isLoading ? "Saving..." : "Save Changes"}
+                    {isLoading ? "Đang Lưu..." : "Lưu Thay Đổi"}
                   </Button>
                 </div>
               </CardFooter>

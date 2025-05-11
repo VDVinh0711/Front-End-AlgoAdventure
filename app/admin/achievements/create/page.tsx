@@ -111,14 +111,14 @@ export default function CreateAchievementPage() {
           <div className="flex items-center mb-6">
             <Link href="/admin/achievements" className="flex items-center text-rose-500 hover:text-rose-600">
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Achievements
+              Quay Lại Trang Quản Lý Nhiệm Vụ
             </Link>
           </div>
 
           {/* Page Header */}
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-rose-500">Create New Achievement</h1>
-            <p className="text-gray-600 mt-1">Add a new achievement to the game</p>
+            <h1 className="text-3xl font-bold text-rose-500">Tạo Nhiệm Vụ Mới</h1>
+            <p className="text-gray-600 mt-1">Thêm một nhiệm vụ mới vào trò chơi</p>
           </div>
 
           {/* Create Form */}
@@ -229,12 +229,12 @@ export default function CreateAchievementPage() {
                 <div className="flex gap-2">
                   <Link href="/admin/achievements">
                     <Button variant="outline" disabled={isLoading}>
-                      Cancel
+                      Hủy Bỏ
                     </Button>
                   </Link>
                   <Button type="submit" className="bg-rose-500 hover:bg-rose-600" disabled={isLoading}>
                     <Save className="h-4 w-4 mr-2" />
-                    {isLoading ? "Creating..." : "Create Achievement"}
+                    {isLoading ? "Đang Tạo..." : "Tạo Nhiệm Vụ"}
                   </Button>
                 </div>
               </CardFooter>
