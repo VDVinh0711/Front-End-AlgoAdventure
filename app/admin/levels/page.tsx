@@ -191,15 +191,15 @@ export default function LevelsPage() {
           <div className="flex items-center mb-6">
             <Link href="/admin" className="flex items-center text-rose-500 hover:text-rose-600">
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Dashboard
+              Quay lại Trang Chủ
             </Link>
           </div>
 
           {/* Page Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-rose-500">Manage Levels</h1>
-              <p className="text-gray-600 mt-1">View and manage game levels</p>
+              <h1 className="text-3xl font-bold text-rose-500">Quản Lý Cấp Độ</h1>
+              <p className="text-gray-600 mt-1">Xem và quản lý cấp độ trong trò chơi</p>
               {error && (
                 <div className="mt-2 text-sm text-red-500 bg-red-50 p-2 rounded-md">
                   {error}
@@ -210,7 +210,7 @@ export default function LevelsPage() {
               <Link href="/admin/levels/create">
                 <Button className="bg-rose-500 hover:bg-rose-600 text-white rounded-full">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add New Level
+                  Thêm Cấp Độ Mới
                 </Button>
               </Link>
             </div>
@@ -219,42 +219,42 @@ export default function LevelsPage() {
           {/* Legend */}
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Block Type Legend</CardTitle>
-              <CardDescription>Color coding for different block types</CardDescription>
+              <CardTitle>Mô Tả Các Khối</CardTitle>
+              <CardDescription>Mã Màu Cho Các Khối</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-pink-200"></div>
-                  <span>Block Normal (Pink)</span>
+                  <span>Khối Bình Thường (Màu Hồng)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-white border border-gray-200"></div>
-                  <span>Block Empty (White)</span>
+                  <span>Khối Rỗng (Màu Trắng)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-green-400"></div>
-                  <span>Block Decor (Green)</span>
+                  <span>Khối Trang Trí (Màu Xanh)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-red-400"></div>
-                  <span>Block Danger (Red)</span>
+                  <span>Khối Bẫy (Màu Đỏ)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-blue-400"></div>
-                  <span>Block Higher (Blue)</span>
+                  <span>Khối Địa Hình Cao Thấp (Màu Xanh Dương)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-white border border-gray-200 relative flex items-center justify-center">
                     <div className="w-3 h-3 rounded-full bg-orange-500"></div>
                   </div>
-                  <span>Player Position</span>
+                  <span>Vị Trí Player</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-white border border-gray-200 relative flex items-center justify-center">
                     <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                   </div>
-                  <span>Coin Position</span>
+                  <span>Vị Trí Tiền</span>
                 </div>
               </div>
             </CardContent>
@@ -266,7 +266,7 @@ export default function LevelsPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
-                  placeholder="Search by level ID..."
+                  placeholder="Tìm kiếm theo ID cấp độ..."
                   className="pl-10 rounded-full"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -274,7 +274,7 @@ export default function LevelsPage() {
               </div>
               <Button variant="outline" className="rounded-full">
                 <Filter className="h-4 w-4 mr-2" />
-                Filter
+                Lọc
               </Button>
             </div>
           </div>
@@ -293,9 +293,9 @@ export default function LevelsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead className="w-[80px]">Level ID</TableHead>
-                      <TableHead>Last Updated</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="w-[80px]">ID</TableHead>
+                      <TableHead>Thời Gian Cập Nhật</TableHead>
+                      <TableHead className="text-right">Hành Động</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -331,7 +331,7 @@ export default function LevelsPage() {
                                     onClick={(e) => toggleJsonData(level.maCapDo, e)}
                                   >
                                     {showJson ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                    <span className="ml-1">{showJson ? "Hide JSON" : "View JSON"}</span>
+                                    <span className="ml-1">{showJson ? "Ẩn JSON" : "Hiển Thị JSON"}</span>
                                   </Button>
                                   <Button
                                     variant="outline"
@@ -339,7 +339,7 @@ export default function LevelsPage() {
                                     className="text-rose-500 border-rose-500 hover:bg-rose-50"
                                     onClick={(e) => handleEditClick(level.maCapDo, e)}
                                   >
-                                    Edit
+                                    Cập Nhật
                                   </Button>
                                 </div>
                               </TableCell>
@@ -357,10 +357,10 @@ export default function LevelsPage() {
                                         <div className="mt-2 text-sm text-gray-500">
                                           <p>Total Coins: {levelData.CoinInGame}</p>
                                           <p>
-                                            Player Start: ({levelData.PointPlayerStart.x}, {levelData.PointPlayerStart.y})
+                                            Vị Trí Player: ({levelData.PointPlayerStart.x}, {levelData.PointPlayerStart.y})
                                           </p>
                                           <p>
-                                            Direction: ({levelData.DirPlayerStart.x}, {levelData.DirPlayerStart.y})
+                                            Hướng Di Chuyển: ({levelData.DirPlayerStart.x}, {levelData.DirPlayerStart.y})
                                           </p>
                                         </div>
                                       </div>
@@ -398,9 +398,9 @@ export default function LevelsPage() {
               {filteredLevels.length > 0 && (
                 <div className="flex items-center justify-between px-4 py-4 border-t">
                   <div className="text-sm text-gray-500">
-                    Showing <span className="font-medium">{indexOfFirstLevel + 1}</span> to{" "}
-                    <span className="font-medium">{Math.min(indexOfLastLevel, filteredLevels.length)}</span> of{" "}
-                    <span className="font-medium">{filteredLevels.length}</span> levels
+                    Hiển thị <span className="font-medium">{indexOfFirstLevel + 1}</span> đến{" "}
+                    <span className="font-medium">{Math.min(indexOfLastLevel, filteredLevels.length)}</span> của{" "}
+                    <span className="font-medium">{filteredLevels.length}</span> cấp độ
                   </div>
                   <div className="flex space-x-2">
                     <Button 
@@ -410,10 +410,10 @@ export default function LevelsPage() {
                       disabled={currentPage === 1}
                       onClick={handlePreviousPage}
                     >
-                      Previous
+                      Trang Trước
                     </Button>
                     <span className="flex items-center px-3 py-1 text-sm">
-                      Page {currentPage} of {totalPages}
+                      Trang {currentPage} trên {totalPages}
                     </span>
                     <Button 
                       variant="outline" 
@@ -422,7 +422,7 @@ export default function LevelsPage() {
                       disabled={currentPage === totalPages}
                       onClick={handleNextPage}
                     >
-                      Next
+                      Trang Tiếp
                     </Button>
                   </div>
                 </div>
