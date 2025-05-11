@@ -9,43 +9,56 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useRouter } from "next/navigation" // Changed from next/router to next/navigation
 import { ApiController } from "@/app/services/apiController"
 import Navigation from "@/components/ui/navigation"
-
-export interface AchievementData {
-    MaNhiemVu?: number,
-    TenNhiemVu: string,
-    GiaTriThuong: number,
-    YeuCau: number,
-    LoaiNhiemVu: number,
-    LoaiPhanThuong: number
-}
+import { AchievementData, LoaiNhiemVuData, PhanThuongData } from "./types"
 
 export default function AchievementsPage() {
   const [searchTerm, setSearchTerm] = useState("")
 
   const router = useRouter();
   const [data, setData] = useState<AchievementData[]>([]);
+  const [loaiNhiemVus, setLoaiNhiemVus] = useState<LoaiNhiemVuData[]>([]);
+  const [phanThuongs, setPhanThuongs] = useState<PhanThuongData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const apiController = new ApiController();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllData = async () => {
       try {
         setIsLoading(true);
         const apiController = new ApiController();
-        const result = await apiController.get<AchievementData[]>('/NhiemVu');
-        console.log(result);
-        setData(result || []);
+        
+        // Fetch achievements data
+        const achievementsPromise = apiController.get<AchievementData[]>('/NhiemVu');
+        
+        // Fetch LoaiNhiemVu data
+        const loaiNhiemVuPromise = apiController.get<LoaiNhiemVuData[]>('/LoaiNhiemVu');
+        
+        // Fetch PhanThuong data
+        const phanThuongPromise = apiController.get<PhanThuongData[]>('/PhanThuong');
+        
+        // Wait for all promises to resolve
+        const [achievements, loaiNhiemVuData, phanThuongData] = await Promise.all([
+          achievementsPromise, 
+          loaiNhiemVuPromise,
+          phanThuongPromise
+        ]);
+        
+        setData(achievements || []);
+        setLoaiNhiemVus(loaiNhiemVuData || []);
+        setPhanThuongs(phanThuongData || []);
+        
         setError(null);
       }
       catch(err) {
-        setError("Error when try fetch data Achievemnts");
+        console.error("Error fetching data:", err);
+        setError("Lỗi khi tải dữ liệu nhiệm vụ và danh mục");
       }
       finally {
         setIsLoading(false);
       }
     }
-    fetchData();
+    fetchAllData();
   }, []);
 
   const handleUpdateClick = (maNhiemVu: number) => {
@@ -61,6 +74,18 @@ export default function AchievementsPage() {
     const nameMatch = skin.TenNhiemVu?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
     return nameMatch;
   });
+
+  // Helper function to get LoaiNhiemVu name by ID
+  const getLoaiNhiemVuName = (id: number) => {
+    const loaiNhiemVu = loaiNhiemVus.find(item => item.MaLoaiNhiemVu === id);
+    return loaiNhiemVu ? loaiNhiemVu.TenLoaiNhiemVu : `Loại ${id}`;
+  };
+
+  // Helper function to get PhanThuong name by ID
+  const getPhanThuongName = (id: number) => {
+    const phanThuong = phanThuongs.find(item => item.MaPhanThuong === id);
+    return phanThuong ? phanThuong.TenPhanThuong : `Phần thưởng ${id}`;
+  };
 
   return (
     <div className="min-h-screen bg-rose-50">
@@ -141,8 +166,16 @@ export default function AchievementsPage() {
                         <TableCell>{achievement.TenNhiemVu}</TableCell>
                         <TableCell>{achievement.GiaTriThuong}</TableCell>
                         <TableCell>{achievement.YeuCau}</TableCell>
-                        <TableCell>{achievement.LoaiNhiemVu}</TableCell>
-                        <TableCell>{achievement.LoaiPhanThuong}</TableCell>
+                        <TableCell>
+                          <span className="px-2 py-1 bg-blue-50 text-blue-800 rounded-full text-xs">
+                            {getLoaiNhiemVuName(achievement.LoaiNhiemVu)}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="px-2 py-1 bg-green-50 text-green-800 rounded-full text-xs">
+                            {getPhanThuongName(achievement.LoaiPhanThuong)}
+                          </span>
+                        </TableCell>
                         <TableCell className="text-right">
                           <Button
                             variant="outline"

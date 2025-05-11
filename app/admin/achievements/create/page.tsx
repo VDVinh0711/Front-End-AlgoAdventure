@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Play, ArrowLeft, Save } from "lucide-react"
@@ -15,25 +15,20 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import Navigation from "@/components/ui/navigation"
 import { ApiController } from "@/app/services/apiController"
-
-// Achievement types
-const achievementTypes = [
-  { id: 1, name: "Kiếm đồng" },
-  { id: 2, name: "Sử dụng đồng" },
-  { id: 3, name: "Đạt cấp độ" },
-]
-
-// Reward types
-const rewardTypes = [
-  { id: 1, name: "Cấp độ" },
-  { id: 2, name: "Đồng" },
-]
+import { LoaiNhiemVuData, PhanThuongData } from "../types"
 
 export default function CreateAchievementPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
   const { toast } = useToast()
   const apiController = new ApiController()
+  
+  // State for achievement types and reward types
+  const [achievementTypes, setAchievementTypes] = useState<LoaiNhiemVuData[]>([])
+  const [rewardTypes, setRewardTypes] = useState<PhanThuongData[]>([])
+  const [error, setError] = useState<string | null>(null)
+  
   const [achievement, setAchievement] = useState({
     maNhiemVu: "",
     tenNhiemVu: "",
@@ -42,6 +37,51 @@ export default function CreateAchievementPage() {
     maLoaiNhiemVu: 1,
     maPhanThuong: 1,
   })
+
+  // Fetch achievement types and reward types from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsInitialLoading(true)
+        
+        // Fetch LoaiNhiemVu data
+        const loaiNhiemVuPromise = apiController.get<LoaiNhiemVuData[]>('/LoaiNhiemVu')
+        
+        // Fetch PhanThuong data
+        const phanThuongPromise = apiController.get<PhanThuongData[]>('/PhanThuong')
+        
+        // Wait for all promises to resolve
+        const [loaiNhiemVuData, phanThuongData] = await Promise.all([
+          loaiNhiemVuPromise,
+          phanThuongPromise
+        ])
+        
+        setAchievementTypes(loaiNhiemVuData || [])
+        setRewardTypes(phanThuongData || [])
+        
+        // Set default values if data is available
+        if (loaiNhiemVuData?.length > 0 && phanThuongData?.length > 0) {
+          setAchievement(prev => ({
+            ...prev,
+            maLoaiNhiemVu: loaiNhiemVuData[0].MaLoaiNhiemVu,
+            maPhanThuong: phanThuongData[0].MaPhanThuong
+          }))
+        }
+        
+        setError(null)
+      } catch (err) {
+        console.error("Error fetching types data:", err)
+        setError("Không thể tải dữ liệu loại nhiệm vụ và phần thưởng. Vui lòng thử lại sau.")
+        // Set empty arrays as fallback
+        setAchievementTypes([])
+        setRewardTypes([])
+      } finally {
+        setIsInitialLoading(false)
+      }
+    }
+    
+    fetchData()
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -100,6 +140,19 @@ export default function CreateAchievementPage() {
     }
   }
 
+  // Show loading state
+  if (isInitialLoading) {
+    return (
+      <div className="min-h-screen bg-rose-50">
+        <Navigation />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500"></div>
+          <span className="ml-3 text-rose-500">Đang tải dữ liệu...</span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-rose-50">
       <Navigation />
@@ -119,6 +172,11 @@ export default function CreateAchievementPage() {
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-rose-500">Tạo Nhiệm Vụ Mới</h1>
             <p className="text-gray-600 mt-1">Thêm một nhiệm vụ mới vào trò chơi</p>
+            {error && (
+              <div className="mt-2 text-sm text-red-500 bg-red-50 p-2 rounded-md">
+                {error}
+              </div>
+            )}
           </div>
 
           {/* Create Form */}
@@ -194,8 +252,8 @@ export default function CreateAchievementPage() {
                         </SelectTrigger>
                         <SelectContent>
                           {achievementTypes.map((type) => (
-                            <SelectItem key={type.id} value={type.id.toString()}>
-                              {type.id} - {type.name}
+                            <SelectItem key={type.MaLoaiNhiemVu} value={type.MaLoaiNhiemVu.toString()}>
+                              {type.MaLoaiNhiemVu} - {type.TenLoaiNhiemVu}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -212,8 +270,8 @@ export default function CreateAchievementPage() {
                         </SelectTrigger>
                         <SelectContent>
                           {rewardTypes.map((type) => (
-                            <SelectItem key={type.id} value={type.id.toString()}>
-                              {type.id} - {type.name}
+                            <SelectItem key={type.MaPhanThuong} value={type.MaPhanThuong.toString()}>
+                              {type.MaPhanThuong} - {type.TenPhanThuong}
                             </SelectItem>
                           ))}
                         </SelectContent>

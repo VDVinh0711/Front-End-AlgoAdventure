@@ -13,22 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { ApiController } from "@/app/services/apiController"
-import { AchievementData } from "../../page"
+import { AchievementData, LoaiNhiemVuData, PhanThuongData } from "../../types"
 import Navigation from "@/components/ui/navigation"
 import { useToast } from "@/hooks/use-toast"
-
-// Achievement types
-const achievementTypes = [
-  { id: 1, name: "Sử Dụng Tiền" },
-  { id: 2, name: "Tiết Kiệm Tiền" },
-  { id: 3, name: "Mở Khóa Cấp Độ" },
-]
-
-// Reward types
-const rewardTypes = [
-  { id: 1, name: "Tiền" },
-  { id: 2, name: "Kinh Nghiệm" },
-]
 
 export default function EditAchievementPage() {
   const router = useRouter()
@@ -37,6 +24,9 @@ export default function EditAchievementPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  // State for achievement types and reward types
+  const [achievementTypes, setAchievementTypes] = useState<LoaiNhiemVuData[]>([])
+  const [rewardTypes, setRewardTypes] = useState<PhanThuongData[]>([])
   const [achievement, setAchievement] = useState<AchievementData>({
     MaNhiemVu: 0,
     TenNhiemVu: "",
@@ -50,27 +40,44 @@ export default function EditAchievementPage() {
   const apiController =  new ApiController();
 
   useEffect(() => {
-    const fetchSkinData = async () => {
+    const fetchAllData = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const allAchievements = await apiController.get<AchievementData[]>('/NhiemVu');
-        const foundSkin = allAchievements.find(a => a.MaNhiemVu === achievementId);
-        if (foundSkin) {
-          setAchievement(foundSkin);
+        
+        // Fetch all required data in parallel
+        const achievementsPromise = apiController.get<AchievementData[]>('/NhiemVu');
+        const loaiNhiemVuPromise = apiController.get<LoaiNhiemVuData[]>('/LoaiNhiemVu');
+        const phanThuongPromise = apiController.get<PhanThuongData[]>('/PhanThuong');
+        
+        // Wait for all promises to resolve
+        const [allAchievements, loaiNhiemVuData, phanThuongData] = await Promise.all([
+          achievementsPromise,
+          loaiNhiemVuPromise,
+          phanThuongPromise
+        ]);
+        
+        // Store the category data
+        setAchievementTypes(loaiNhiemVuData || []);
+        setRewardTypes(phanThuongData || []);
+        
+        // Find the specific achievement
+        const foundAchievement = allAchievements.find(a => a.MaNhiemVu === achievementId);
+        if (foundAchievement) {
+          setAchievement(foundAchievement);
         } else {
-          setError(`Not found Achievemetns Data with id ${achievementId}`);
+          setError(`Không tìm thấy nhiệm vụ với ID ${achievementId}`);
         }
       } catch (err) {
-        console.error("Eror when fetch data :", err);
-        setError("Can't load data , please try again");
+        console.error("Lỗi khi tải dữ liệu:", err);
+        setError("Không thể tải dữ liệu, vui lòng thử lại sau");
       } finally {
         setIsLoading(false);
       }
     };
 
     if (achievementId) {
-      fetchSkinData();
+      fetchAllData();
     }
   }, [achievementId]);
 
@@ -137,7 +144,7 @@ export default function EditAchievementPage() {
         <Navigation/>
         <div className="flex items-center justify-center min-h-[80vh]">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-rose-500"></div>
-          <span className="ml-3 text-rose-500">Đang tải dữ liệu trang phục...</span>
+          <span className="ml-3 text-rose-500">Đang tải dữ liệu...</span>
         </div>
       </div>
     );
@@ -162,6 +169,11 @@ export default function EditAchievementPage() {
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-rose-500">Cập Nhật Nhiệm Vụ</h1>
             <p className="text-gray-600 mt-1">Chỉnh sửa chi tiết nhiệm vụ</p>
+            {error && (
+              <div className="mt-2 text-sm text-red-500 bg-red-50 p-2 rounded-md">
+                {error}
+              </div>
+            )}
           </div>
 
           {/* Edit Form */}
@@ -230,8 +242,8 @@ export default function EditAchievementPage() {
                         </SelectTrigger>
                         <SelectContent>
                           {achievementTypes.map((type) => (
-                            <SelectItem key={type.id} value={type.id.toString()}>
-                              {type.id} - {type.name}
+                            <SelectItem key={type.MaLoaiNhiemVu} value={type.MaLoaiNhiemVu.toString()}>
+                              {type.MaLoaiNhiemVu} - {type.TenLoaiNhiemVu}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -248,8 +260,8 @@ export default function EditAchievementPage() {
                         </SelectTrigger>
                         <SelectContent>
                           {rewardTypes.map((type) => (
-                            <SelectItem key={type.id} value={type.id.toString()}>
-                              {type.id} - {type.name}
+                            <SelectItem key={type.MaPhanThuong} value={type.MaPhanThuong.toString()}>
+                              {type.MaPhanThuong} - {type.TenPhanThuong}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -261,19 +273,29 @@ export default function EditAchievementPage() {
 
               <Separator />
 
-              <CardFooter className="flex justify-between p-6">
-                <div className="border-red-500 text-red-500 hover:bg-red-50"> </div>
-                <div className="flex gap-2">
-                  <Link href="/admin/achievements">
-                    <Button variant="outline" disabled={isLoading}>
-                      Hủy Bỏ
-                    </Button>
-                  </Link>
-                  <Button type="submit" className="bg-rose-500 hover:bg-rose-600" disabled={isLoading}>
-                    <Save className="h-4 w-4 mr-2" />
-                    {isLoading ? "Đang Lưu..." : "Lưu Thay Đổi"}
+              <CardFooter className="flex justify-end gap-4 p-6">
+                <Link href={`/admin/achievements`}>
+                  <Button variant="outline" type="button">
+                    Hủy Bỏ
                   </Button>
-                </div>
+                </Link>
+                <Button
+                  type="submit"
+                  className="bg-rose-500 hover:bg-rose-600 text-white"
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <div className="animate-spin mr-2 h-4 w-4 border-2 border-b-transparent border-white rounded-full"></div>
+                      Đang Lưu...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Lưu Thay Đổi
+                    </>
+                  )}
+                </Button>
               </CardFooter>
             </form>
           </Card>
