@@ -34,11 +34,11 @@ interface LevelData {
 
 // Block type definitions
 const blockTypes = [
-  { id: 0, name: "Normal", color: "bg-pink-200", icon: <div className="h-4 w-4 bg-pink-200 rounded-sm" /> },
-  { id: 1, name: "Emty", color: "bg-white border border-gray-200", icon: <div className="h-4 w-4 bg-white border border-gray-200 rounded-sm" /> },
-  { id: 2, name: "Decor", color: "bg-green-500", icon: <div className="h-4 w-4 bg-green-200 rounded-sm" /> },
-  { id: 3, name: "Danger", color: "bg-red-500", icon: <div className="h-4 w-4 bg-red-200 rounded-sm" /> },
-  { id: 4, name: "Higher", color: "bg-blue-500", icon: <div className="h-4 w-4 bg-blue-200 rounded-sm" /> },
+  { id: 0, name: "Bình Thường", color: "bg-pink-200", icon: <div className="h-4 w-4 bg-pink-200 rounded-sm" /> },
+  { id: 1, name: "Rỗng", color: "bg-white border border-gray-200", icon: <div className="h-4 w-4 bg-white border border-gray-200 rounded-sm" /> },
+  { id: 2, name: "Trang Trí", color: "bg-green-500", icon: <div className="h-4 w-4 bg-green-200 rounded-sm" /> },
+  { id: 3, name: "Bẫy", color: "bg-red-500", icon: <div className="h-4 w-4 bg-red-200 rounded-sm" /> },
+  { id: 4, name: "Địa Hình Cao Thấp", color: "bg-blue-500", icon: <div className="h-4 w-4 bg-blue-200 rounded-sm" /> },
 ]
 
 export default function CreateLevelPage() {
@@ -236,14 +236,14 @@ export default function CreateLevelPage() {
           <div className="flex items-center mb-6">
             <Link href="/admin/levels" className="flex items-center text-rose-500 hover:text-rose-600">
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Levels
+              Quay Lại Trang Quản Lý Cấp Độ
             </Link>
           </div>
 
           {/* Page Header */}
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-rose-500">Create New Level</h1>
-            <p className="text-gray-600 mt-1">Design a new level for your game</p>
+            <h1 className="text-3xl font-bold text-rose-500">Tạo Cấp Độ Mới</h1>
+            <p className="text-gray-600 mt-1">Thiết kế một cấp độ mới cho trò chơi của bạn</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -251,8 +251,8 @@ export default function CreateLevelPage() {
             <div className="lg:col-span-3">
               <Card className="bg-white shadow-md">
                 <CardHeader className="bg-rose-500 text-white">
-                  <CardTitle>Block Types</CardTitle>
-                  <CardDescription className="text-rose-100">Select a block type to draw</CardDescription>
+                  <CardTitle>Loại Khối</CardTitle>
+                  <CardDescription className="text-rose-100">Chọn loại khối để vẽ</CardDescription>
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="space-y-4">
@@ -276,7 +276,7 @@ export default function CreateLevelPage() {
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent side="right">
-                            <p>Block Type {blockType.id}</p>
+                            <p>Loại Khối {blockType.id}</p>
                           </TooltipContent>
                         </Tooltip>
                       ))}
@@ -295,7 +295,7 @@ export default function CreateLevelPage() {
                         />
                         <Label htmlFor="hasCoin" className="flex items-center cursor-pointer">
                           <Coin className="h-4 w-4 mr-2 text-yellow-500" />
-                          Has Coin
+                          Tiền
                         </Label>
                       </div>
                     </div>
@@ -308,7 +308,7 @@ export default function CreateLevelPage() {
                       onClick={handleClearGrid}
                     >
                       <Trash className="h-4 w-4 mr-2" />
-                      Clear Grid
+                      Xóa Grid
                     </Button>
                   </div>
                 </CardContent>
@@ -316,12 +316,11 @@ export default function CreateLevelPage() {
 
               <Card className="bg-white shadow-md mt-6">
                 <CardHeader>
-                  <CardTitle>Level Properties</CardTitle>
-                  <CardDescription>Configure level settings</CardDescription>
+                  <CardTitle>Vị Trí Player</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="playerStartX">Player Start Position</Label>
+                    <Label htmlFor="playerStartX">Vị Trí Player Bắt Đầu</Label>
                     <div className="flex space-x-2">
                       <div className="space-y-1 flex-1">
                         <Label htmlFor="playerStartX" className="text-xs text-gray-500">
@@ -355,7 +354,7 @@ export default function CreateLevelPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="directionX">Player Direction</Label>
+                    <Label htmlFor="directionX">Hướng Di Chuyển Player</Label>
                     <div className="flex space-x-2">
                       <div className="space-y-1 flex-1">
                         <Label htmlFor="directionX" className="text-xs text-gray-500">
@@ -392,25 +391,25 @@ export default function CreateLevelPage() {
 
               <Card className="bg-white shadow-md mt-6">
                 <CardHeader>
-                  <CardTitle>Level Statistics</CardTitle>
+                  <CardTitle>Thống Kê Cấp Độ</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Total Coins:</span>
+                      <span className="text-gray-600">Tổng Tiền:</span>
                       <span className="font-bold text-yellow-500 flex items-center">
                         <Coin className="h-4 w-4 mr-1" />
                         {levelData.CoinInGame}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Player Position:</span>
+                      <span className="text-gray-600">Vị Trí Player:</span>
                       <span className="font-bold">
                         ({levelData.PointPlayerStart.x}, {levelData.PointPlayerStart.y})
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Direction:</span>
+                      <span className="text-gray-600">Hướng Di Chuyển:</span>
                       <span className="font-bold">
                         ({levelData.DirPlayerStart.x}, {levelData.DirPlayerStart.y})
                       </span>
@@ -424,8 +423,8 @@ export default function CreateLevelPage() {
             <div className="lg:col-span-9">
               <Card className="bg-white shadow-md">
                 <CardHeader>
-                  <CardTitle>Level Grid</CardTitle>
-                  <CardDescription>Click and drag to draw blocks</CardDescription>
+                  <CardTitle>Grid Cấp Độ</CardTitle>
+                  <CardDescription>Nhấp và kéo để vẽ khối</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
                   <div
@@ -482,7 +481,7 @@ export default function CreateLevelPage() {
                 <CardFooter className="flex justify-between">
                   <Button variant="outline" onClick={handleClearGrid} disabled={isSaving}>
                     <Trash className="h-4 w-4 mr-2" />
-                    Clear Grid
+                    Xóa Grid
                   </Button>
                   <Button 
                     className="bg-rose-500 hover:bg-rose-600" 
@@ -497,7 +496,7 @@ export default function CreateLevelPage() {
                     ) : (
                       <>
                         <Save className="h-4 w-4 mr-2" />
-                        Save Level
+                        Lưu Cấp Độ
                       </>
                     )}
                   </Button>
@@ -506,8 +505,8 @@ export default function CreateLevelPage() {
 
               <Card className="bg-white shadow-md mt-6">
                 <CardHeader>
-                  <CardTitle>Level Preview</CardTitle>
-                  <CardDescription>JSON representation of your level</CardDescription>
+                  <CardTitle>Mô Tả Cấp Độ</CardTitle>
+                  <CardDescription>Mô tả cấp độ dưới dạng JSON</CardDescription>
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="bg-gray-900 text-gray-100 p-4 rounded-md overflow-auto max-h-[200px]">
