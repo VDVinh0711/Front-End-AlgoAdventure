@@ -45,7 +45,11 @@ export default function LevelsPage() {
   const [levels, setLevels] = useState<Level[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const levelsPerPage = 5
+  
   useEffect(() => {
     const fetchLevels = async () => {
       try {
@@ -68,6 +72,33 @@ export default function LevelsPage() {
 
   // Filter levels based on search term
   const filteredLevels = levels.filter((level) => level.maCapDo.toString().includes(searchTerm))
+  
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredLevels.length / levelsPerPage)
+  
+  // Get current levels for the page
+  const indexOfLastLevel = currentPage * levelsPerPage
+  const indexOfFirstLevel = indexOfLastLevel - levelsPerPage
+  const currentLevels = filteredLevels.slice(indexOfFirstLevel, indexOfLastLevel)
+  
+  // Handle page changes
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+      // Reset expanded level when changing pages
+      setExpandedLevel(null)
+      setShowJsonData(null)
+    }
+  }
+  
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+      // Reset expanded level when changing pages
+      setExpandedLevel(null)
+      setShowJsonData(null)
+    }
+  }
 
   // Toggle expanded level
   const toggleExpandLevel = (levelId: number) => {
@@ -91,20 +122,18 @@ export default function LevelsPage() {
   // Get block color based on block type
   const getBlockColor = (blockType: number) => {
     switch (blockType) {
+      case 0:
+        return "bg-pink-200"
       case 1:
         return "bg-white border border-gray-200"
       case 2:
-        return "bg-rose-200"
+        return "bg-green-400"
       case 3:
-        return "bg-yellow-200"
+        return "bg-red-400"
       case 4:
-        return "bg-green-200"
-      case 5:
-        return "bg-red-200"
-      case 6:
-        return "bg-blue-200"
+        return "bg-blue-400"
       default:
-        return "bg-gray-200"
+        return "bg-gray-400"
     }
   }
 
@@ -115,7 +144,6 @@ export default function LevelsPage() {
       .fill(0)
       .map(() => Array(6).fill(null))
 
-    // Fill the grid with block data
     levelData.ListDataMap.forEach((block) => {
       const { x, y } = block.PointMap
       grid[y][x] = block
@@ -134,11 +162,9 @@ export default function LevelsPage() {
                 key={`${rowIndex}-${colIndex}`}
                 className={`aspect-square ${getBlockColor(block.BlockType)} relative flex items-center justify-center`}
               >
-                {/* Player position indicator */}
                 {isPlayerStart && <div className="absolute w-4 h-4 rounded-full bg-orange-500 z-10"></div>}
 
-                {/* Coin indicator */}
-                {block.IsHasCoin && <div className="absolute w-3 h-3 rounded-full bg-yellow-400 z-5"></div>}
+                {block.IsHasCoin && <div className="absolute w-3 h-3 rounded-full bg-yellow-500 z-5"></div>}
               </div>
             )
           }),
@@ -199,28 +225,24 @@ export default function LevelsPage() {
             <CardContent>
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 bg-pink-200"></div>
+                  <span>Block Normal (Pink)</span>
+                </div>
+                <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-white border border-gray-200"></div>
-                  <span>Type 1 (White)</span>
+                  <span>Block Empty (White)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-rose-200"></div>
-                  <span>Type 2 (Pink)</span>
+                  <div className="w-6 h-6 bg-green-400"></div>
+                  <span>Block Decor (Green)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-yellow-200"></div>
-                  <span>Type 3 (Yellow)</span>
+                  <div className="w-6 h-6 bg-red-400"></div>
+                  <span>Block Danger (Red)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-green-200"></div>
-                  <span>Type 4 (Green)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-red-200"></div>
-                  <span>Type 5 (Red)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 bg-blue-200"></div>
-                  <span>Type 6 (Blue)</span>
+                  <div className="w-6 h-6 bg-blue-400"></div>
+                  <span>Block Higher (Blue)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-white border border-gray-200 relative flex items-center justify-center">
@@ -230,7 +252,7 @@ export default function LevelsPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 bg-white border border-gray-200 relative flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                   </div>
                   <span>Coin Position</span>
                 </div>
@@ -277,8 +299,8 @@ export default function LevelsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredLevels.length > 0 ? (
-                      filteredLevels.map((level) => {
+                    {currentLevels.length > 0 ? (
+                      currentLevels.map((level) => {
                         const levelData: LevelData = JSON.parse(level.duLieuCapDo)
                         const isExpanded = expandedLevel === level.maCapDo
                         const showJson = showJsonData === level.maCapDo
@@ -376,15 +398,30 @@ export default function LevelsPage() {
               {filteredLevels.length > 0 && (
                 <div className="flex items-center justify-between px-4 py-4 border-t">
                   <div className="text-sm text-gray-500">
-                    Showing <span className="font-medium">1</span> to{" "}
-                    <span className="font-medium">{filteredLevels.length}</span> of{" "}
-                    <span className="font-medium">{levels.length}</span> levels
+                    Showing <span className="font-medium">{indexOfFirstLevel + 1}</span> to{" "}
+                    <span className="font-medium">{Math.min(indexOfLastLevel, filteredLevels.length)}</span> of{" "}
+                    <span className="font-medium">{filteredLevels.length}</span> levels
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm" className="rounded-full" disabled>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="rounded-full" 
+                      disabled={currentPage === 1}
+                      onClick={handlePreviousPage}
+                    >
                       Previous
                     </Button>
-                    <Button variant="outline" size="sm" className="rounded-full" disabled>
+                    <span className="flex items-center px-3 py-1 text-sm">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="rounded-full" 
+                      disabled={currentPage === totalPages}
+                      onClick={handleNextPage}
+                    >
                       Next
                     </Button>
                   </div>

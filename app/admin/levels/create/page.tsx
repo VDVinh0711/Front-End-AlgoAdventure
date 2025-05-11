@@ -34,12 +34,11 @@ interface LevelData {
 
 // Block type definitions
 const blockTypes = [
-  { id: 1, name: "Empty", color: "bg-white border border-gray-200", icon: <Eraser className="h-4 w-4" /> },
-  { id: 2, name: "Normal", color: "bg-rose-200", icon: <div className="h-4 w-4 bg-rose-200 rounded-sm" /> },
-  { id: 3, name: "Decor", color: "bg-yellow-200", icon: <div className="h-4 w-4 bg-yellow-200 rounded-sm" /> },
-  { id: 4, name: "Danger", color: "bg-green-200", icon: <div className="h-4 w-4 bg-green-200 rounded-sm" /> },
-  { id: 5, name: "Higher", color: "bg-red-200", icon: <div className="h-4 w-4 bg-red-200 rounded-sm" /> },
-  { id: 6, name: "Special", color: "bg-blue-200", icon: <div className="h-4 w-4 bg-blue-200 rounded-sm" /> },
+  { id: 0, name: "Normal", color: "bg-pink-200", icon: <div className="h-4 w-4 bg-pink-200 rounded-sm" /> },
+  { id: 1, name: "Emty", color: "bg-white border border-gray-200", icon: <div className="h-4 w-4 bg-white border border-gray-200 rounded-sm" /> },
+  { id: 2, name: "Decor", color: "bg-green-500", icon: <div className="h-4 w-4 bg-green-200 rounded-sm" /> },
+  { id: 3, name: "Danger", color: "bg-red-500", icon: <div className="h-4 w-4 bg-red-200 rounded-sm" /> },
+  { id: 4, name: "Higher", color: "bg-blue-500", icon: <div className="h-4 w-4 bg-blue-200 rounded-sm" /> },
 ]
 
 export default function CreateLevelPage() {

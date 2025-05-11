@@ -42,12 +42,11 @@ interface Level {
 
 // Block type definitions
 const blockTypes = [
-  { id: 1, name: "Empty", color: "bg-white border border-gray-200", icon: <Eraser className="h-4 w-4" /> },
-  { id: 2, name: "Normal", color: "bg-rose-200", icon: <div className="h-4 w-4 bg-rose-200 rounded-sm" /> },
-  { id: 3, name: "Decor", color: "bg-yellow-200", icon: <div className="h-4 w-4 bg-yellow-200 rounded-sm" /> },
-  { id: 4, name: "Danger", color: "bg-green-200", icon: <div className="h-4 w-4 bg-green-200 rounded-sm" /> },
-  { id: 5, name: "Higher", color: "bg-red-200", icon: <div className="h-4 w-4 bg-red-200 rounded-sm" /> },
-  { id: 6, name: "Special", color: "bg-blue-200", icon: <div className="h-4 w-4 bg-blue-200 rounded-sm" /> },
+  { id: 0, name: "Normal", color: "bg-pink-200", icon: <div className="h-4 w-4 bg-pink-200 rounded-sm" /> },
+  { id: 1, name: "Emty", color: "bg-white border border-gray-200", icon: <div className="h-4 w-4 bg-white border border-gray-200 rounded-sm" /> },
+  { id: 2, name: "Decor", color: "bg-green-500", icon: <div className="h-4 w-4 bg-green-200 rounded-sm" /> },
+  { id: 3, name: "Danger", color: "bg-red-500", icon: <div className="h-4 w-4 bg-red-200 rounded-sm" /> },
+  { id: 4, name: "Higher", color: "bg-blue-500", icon: <div className="h-4 w-4 bg-blue-200 rounded-sm" /> },
 ]
 
 export default function EditLevelPage() {
@@ -73,7 +72,7 @@ export default function EditLevelPage() {
   const [originalLevel, setOriginalLevel] = useState<Level | null>(null);
 
   // State for UI
-  const [selectedBlockType, setSelectedBlockType] = useState(1);
+  const [selectedBlockType, setSelectedBlockType] = useState(0);
   const [hasCoin, setHasCoin] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isDraggingPlayer, setIsDraggingPlayer] = useState(false);
@@ -132,7 +131,7 @@ export default function EditLevelPage() {
       for (let y = 0; y < 6; y++) {
         for (let x = 0; x < 6; x++) {
           initialBlocks.push({
-            BlockType: 1, // Empty
+            BlockType: 0, // Empty (now pink)
             IsHasCoin: false,
             PointMap: { x, y },
           });
@@ -241,7 +240,7 @@ export default function EditLevelPage() {
     if (confirm("Are you sure you want to clear the grid? This action cannot be undone.")) {
       const clearedBlocks = levelData.ListDataMap.map((block) => ({
         ...block,
-        BlockType: 1, // Empty
+        BlockType: 1, // Empty (now pink)
         IsHasCoin: false,
       }));
 
