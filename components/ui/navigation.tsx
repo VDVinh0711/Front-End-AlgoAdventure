@@ -43,22 +43,22 @@ export default function Navigation() {
       <nav className="hidden md:flex items-center space-x-2">
         <Link href="/">
           <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-            Home
+            Trang Chủ
           </Button>
         </Link>
         <Link href="/about">
           <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-            About
+            Giới Thiệu
           </Button>
         </Link>
         <Link href="/services">
           <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-            Services
+            Dịch Vụ
           </Button>
         </Link>
         <Link href="/contact">
           <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-            Contact
+            Liên Hệ
           </Button>
         </Link>
         
@@ -74,22 +74,22 @@ export default function Navigation() {
             <DropdownMenuContent align="end">
               {isAdmin && (
                 <DropdownMenuItem asChild>
-                  <Link href="/admin">Admin Dashboard</Link>
+                  <Link href="/admin">Trang Quản Trị</Link>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem asChild>
-                <Link href="/profile">Profile</Link>
+                <Link href="/profile">Tài Khoản Của Tôi</Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout} className="text-red-500">
                 <LogOut className="h-4 w-4 mr-2" />
-                Logout
+                Đăng Xuất
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
           <Link href="/login">
             <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full ml-2">
-              Login
+              Đăng Nhập
             </Button>
           </Link>
         )}
@@ -107,35 +107,35 @@ export default function Navigation() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link href="/">Home</Link>
+                <Link href="/">Trang Chủ</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/about">About</Link>
+                <Link href="/about">Giới Thiệu</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/services">Services</Link>
+                <Link href="/services">Dịch Vụ</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/contact">Contact</Link>
+                <Link href="/contact">Liên Hệ</Link>
               </DropdownMenuItem>
               {isAdmin && (
                 <DropdownMenuItem asChild>
-                  <Link href="/admin">Admin Dashboard</Link>
+                  <Link href="/admin">Trang Quản Trị</Link>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem asChild>
-                <Link href="/profile">Profile</Link>
+                <Link href="/profile">Tài Khoản Của Tôi</Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout} className="text-red-500">
                 <LogOut className="h-4 w-4 mr-2" />
-                Logout
+                Đăng Xuất
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
           <Link href="/login">
             <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full">
-              Login
+              Đăng Nhập
             </Button>
           </Link>
         )}
