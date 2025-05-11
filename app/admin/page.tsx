@@ -1,89 +1,18 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Play, Award, Layers, Users, Palette } from "lucide-react"
 import Navigation from "@/components/ui/navigation"
+import { useAuth } from "@/app/contexts/AuthContext"
 
 export default function AdminPage() {
+  const { hasRole } = useAuth();
+  const isAdmin = hasRole('Admin');
+
   return (
     <div className="min-h-screen bg-rose-50">
-      {/* Navigation */}
-      {/* <header className="container mx-auto py-4 px-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center">
-          <div className="relative h-10 w-20">
-            <div className="absolute inset-0 bg-rose-500 rounded-full flex items-center justify-center">
-              <Play className="h-5 w-5 text-white ml-1" />
-            </div>
-            <div
-              className="absolute inset-0 border-2 border-rose-500 rounded-full"
-              style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-            ></div>
-          </div>
-          <span className="text-rose-500 font-bold ml-2 text-sm">GAMETAMIN</span>
-        </Link>
-
-        <nav className="hidden md:flex items-center space-x-2">
-          <Link href="/">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Home
-            </Button>
-          </Link>
-          <Link href="/about">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              About
-            </Button>
-          </Link>
-          <Link href="/games">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Game
-            </Button>
-          </Link>
-          <Link href="/recruit">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Recruit
-            </Button>
-          </Link>
-          <Link href="/contact">
-            <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-              Contact
-            </Button>
-          </Link>
-          <Button variant="default" className="bg-rose-500 hover:bg-rose-600 rounded-full">
-            Admin
-          </Button>
-          <Link href="/login">
-            <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full ml-2">
-              Login
-            </Button>
-          </Link>
-        </nav>
-
-        <div className="flex md:hidden items-center space-x-2">
-          <Link href="/login">
-            <Button variant="default" className="bg-green-500 hover:bg-green-600 rounded-full">
-              Login
-            </Button>
-          </Link>
-          <Button variant="outline" size="icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6"
-            >
-              <line x1="4" x2="20" y1="12" y2="12" />
-              <line x1="4" x2="20" y1="6" y2="6" />
-              <line x1="4" x2="20" y1="18" y2="18" />
-            </svg>
-          </Button>
-        </div>
-      </header> */}
       <Navigation/>
       {/* Admin Dashboard */}
       <main className="container mx-auto px-4 py-12">
@@ -173,6 +102,29 @@ export default function AdminPage() {
                 </Link>
               </CardFooter>
             </Card>
+
+            {/* Employee Management - only shown to Admin users */}
+            {isAdmin && (
+              <Card className="overflow-hidden border-2 border-rose-200 hover:border-rose-500 transition-colors">
+                <CardHeader className="bg-rose-500 text-white">
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Employee
+                  </CardTitle>
+                  <CardDescription className="text-rose-100">Manage employees</CardDescription>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <p className="text-sm text-gray-600">View and manage employee accounts, roles and permissions.</p>
+                </CardContent>
+                <CardFooter>
+                  <Link href="/admin/employees" className="w-full">
+                    <Button className="w-full bg-rose-500 hover:bg-rose-600 text-white rounded-full">
+                      Manage Employee
+                    </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            )}
           </div>
 
           <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
