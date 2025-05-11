@@ -9,7 +9,6 @@ import { Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/app/contexts/AuthContext"
 import { useToast } from "@/hooks/use-toast"
 
@@ -42,8 +41,8 @@ export default function LoginPage() {
       
       if (result.success) {
         toast({
-          title: "✅ Login successful!",
-          description: "Redirecting you to the dashboard...",
+          title: "✅ Đăng Nhập thành công!",
+          description: "Đang chuyển hướng đến trang quản trị...",
           variant: "default",
           className: "bg-green-100 border-green-500 border",
         })
@@ -52,7 +51,7 @@ export default function LoginPage() {
       } else if (result.error) {
         setError(result.error.message)
         toast({
-          title: "❌ Login failed",
+          title: "❌ Đăng Nhập thất bại",
           description: result.error.message,
           variant: "destructive",
           className: "bg-red-100 border-red-500 border text-black",
@@ -60,10 +59,10 @@ export default function LoginPage() {
         })
       }
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.")
+      setError("Đã xảy ra lỗi. Vui lòng thử lại.")
       toast({
-        title: "❌ Error",
-        description: "An unexpected error occurred. Please try again.",
+        title: "❌ Lỗi",
+        description: "Đã xảy ra lỗi. Vui lòng thử lại.",
         variant: "destructive",
         className: "bg-red-100 border-red-500 border text-black",
         duration: 5000,
@@ -71,19 +70,6 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false)
     }
-  }
-
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    toast({
-      title: "⚠️ Feature not available",
-      description: "Registration is not implemented yet. Please contact your administrator.",
-      variant: "default",
-      className: "bg-yellow-100 border-yellow-500 border",
-      duration: 5000,
-    })
-    setIsLoading(false)
   }
 
   return (
@@ -110,8 +96,8 @@ export default function LoginPage() {
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
             <div className="p-8">
               <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-rose-500">Welcome Back!</h1>
-                <p className="text-gray-600 mt-2">Sign in to access your account</p>
+                <h1 className="text-3xl font-bold text-rose-500">Chào Mừng Trở Lại!</h1>
+                <p className="text-gray-600 mt-2">Đăng nhập để truy cập tài khoản của bạn</p>
                 
                 {error && (
                   <div className="mt-4 p-3 bg-red-50 text-red-500 rounded-lg border border-red-200 text-sm">
@@ -120,111 +106,50 @@ export default function LoginPage() {
                 )}
               </div>
 
-              <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="login" className="rounded-full">
-                    Login
-                  </TabsTrigger>
-                  <TabsTrigger value="register" className="rounded-full">
-                    Register
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="login">
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="username">UserName</Label>
-                      <Input
-                        id="username"
-                        name="username"
-                        type="text"
-                        placeholder="Enter your UserName"
-                        required
-                        className="rounded-lg"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="password">Password</Label>
-                        <Link href="#" className="text-sm text-rose-500 hover:underline">
-                          Forgot password?
-                        </Link>
-                      </div>
-                      <Input 
-                        id="password" 
-                        name="password"
-                        type="password" 
-                        placeholder="••••••••" 
-                        required 
-                        className="rounded-lg" 
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      className="w-full bg-rose-500 hover:bg-rose-600 text-white rounded-full h-12"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? "Signing in..." : "Sign In"}
-                    </Button>
-                  </form>
-                </TabsContent>
-
-                <TabsContent value="register">
-                  <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="register-name">Full Name</Label>
-                      <Input id="register-name" placeholder="John Doe" required className="rounded-lg" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email">Email</Label>
-                      <Input
-                        id="register-email"
-                        type="email"
-                        placeholder="your.email@example.com"
-                        required
-                        className="rounded-lg"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password">Password</Label>
-                      <Input
-                        id="register-password"
-                        type="password"
-                        placeholder="••••••••"
-                        required
-                        className="rounded-lg"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="register-confirm-password">Confirm Password</Label>
-                      <Input
-                        id="register-confirm-password"
-                        type="password"
-                        placeholder="••••••••"
-                        required
-                        className="rounded-lg"
-                      />
-                    </div>
-                    <Button
-                      type="submit"
-                      className="w-full bg-rose-500 hover:bg-rose-600 text-white rounded-full h-12"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? "Creating account..." : "Create Account"}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">Tên Người Dùng</Label>
+                  <Input
+                    id="username"
+                    name="username"
+                    type="text"
+                    placeholder="Nhập tên người dùng của bạn"
+                    required
+                    className="rounded-lg"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Mật Khẩu</Label>
+                  
+                  </div>
+                  <Input 
+                    id="password" 
+                    name="password"
+                    type="password" 
+                    placeholder="" 
+                    required 
+                    className="rounded-lg" 
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-rose-500 hover:bg-rose-600 text-white rounded-full h-12"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Đang đăng nhập..." : "Đăng Nhập"}
+                </Button>
+              </form>
 
               <div className="mt-8 pt-6 border-t border-gray-200 text-center">
                 <p className="text-sm text-gray-600">
-                  By continuing, you agree to Gametamin's{" "}
+                  Bằng cách tiếp tục, bạn đồng ý với{" "}
                   <Link href="#" className="text-rose-500 hover:underline">
-                    Terms of Service
+                    Điều khoản dịch vụ
                   </Link>{" "}
                   and{" "}
                   <Link href="#" className="text-rose-500 hover:underline">
-                    Privacy Policy
+                    Chính sách bảo mật
                   </Link>
                 </p>
               </div>
@@ -234,7 +159,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <Link href="/">
               <Button variant="ghost" className="text-rose-500 hover:bg-rose-100 rounded-full">
-                Back to Home
+                Trở Về Trang Chủ
               </Button>
             </Link>
           </div>
