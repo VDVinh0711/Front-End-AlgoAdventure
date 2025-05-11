@@ -124,7 +124,6 @@ export default function PlayersPage() {
         }
       })
     } else if (chartType === "level") {
-      // Group players by level ranges
       const levelRanges = [
         { min: 0, max: 0, label: "Level 0" },
         { min: 1, max: 5, label: "Level 1-5" },
@@ -272,11 +271,11 @@ export default function PlayersPage() {
 
   const getChartTitle = () => {
     if (chartType === "score") {
-      return "Player Distribution by Score"
+      return "Phân Bố Người Chơi Theo Điểm"
     } else if (chartType === "level") {
-      return "Player Distribution by Level"
+      return "Phân Bố Người Chơi Theo Cấp Độ"
     } else if (chartType === "money") {
-      return "Player Distribution by Money"
+      return "Phân Bố Người Chơi Theo Tiền"
     }
     return ""
   }
@@ -329,14 +328,14 @@ export default function PlayersPage() {
           <div className="flex items-center mb-6">
             <Link href="/admin" className="flex items-center text-rose-500 hover:text-rose-600">
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Dashboard
+              Trở Về Trang Chủ
             </Link>
           </div>
 
           {/* Error message */}
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6" role="alert">
-              <p className="font-bold">Error</p>
+              <p className="font-bold">Lỗi</p>
               <p>{error}</p>
             </div>
           )}
@@ -344,8 +343,8 @@ export default function PlayersPage() {
           {/* Page Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-rose-500">Manage Players</h1>
-              <p className="text-gray-600 mt-1">View and manage player accounts</p>
+              <h1 className="text-3xl font-bold text-rose-500">Quản Lý Người Chơi</h1>
+              <p className="text-gray-600 mt-1">Xem và quản lý tài khoản người chơi</p>
             </div>
           </div>
 
@@ -353,7 +352,7 @@ export default function PlayersPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Total Players</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500">Tổng Người Chơi</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">{players.length}</div>
@@ -361,7 +360,7 @@ export default function PlayersPage() {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Avg. Level</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500">Trung Bình Cấp Độ</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">
@@ -373,7 +372,7 @@ export default function PlayersPage() {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Avg. Score</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500">Trung Bình Điểm</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">
@@ -391,7 +390,7 @@ export default function PlayersPage() {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div>
                   <CardTitle>{getChartTitle()}</CardTitle>
-                  <CardDescription>Visualize player distribution</CardDescription>
+                  <CardDescription>Hiển thị phân bố người chơi</CardDescription>
                 </div>
                 <div className="flex items-center space-x-2 mt-4 md:mt-0">
                   <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
@@ -432,19 +431,19 @@ export default function PlayersPage() {
             <CardContent>
               {isLoading ? (
                 <div className="flex justify-center items-center h-64">
-                  <p>Loading chart data...</p>
+                  <p>Đang tải dữ liệu biểu đồ...</p>
                 </div>
               ) : (
                 <Tabs defaultValue="score" onValueChange={(value) => setChartType(value as any)}>
                   <TabsList className="grid w-full grid-cols-3 mb-6">
                     <TabsTrigger value="score" className="rounded-full">
-                      By Score
+                      Theo Điểm
                     </TabsTrigger>
                     <TabsTrigger value="level" className="rounded-full">
-                      By Level
+                      Theo Cấp Độ
                     </TabsTrigger>
                     <TabsTrigger value="money" className="rounded-full">
-                      By Money
+                      Theo Tiền
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="score">{renderChart()}</TabsContent>
@@ -461,7 +460,7 @@ export default function PlayersPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
-                  placeholder="Search by player ID..."
+                  placeholder="Tìm kiếm theo mã người chơi..."
                   className="pl-10 rounded-full"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -469,7 +468,7 @@ export default function PlayersPage() {
               </div>
               <Button variant="outline" className="rounded-full">
                 <Filter className="h-4 w-4 mr-2" />
-                Filter
+                Lọc
               </Button>
             </div>
           </div>
@@ -478,19 +477,19 @@ export default function PlayersPage() {
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             {isLoading ? (
               <div className="flex justify-center items-center h-64">
-                <p>Loading players...</p>
+                <p>Đang tải dữ liệu người chơi...</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead>maNguoiChoi</TableHead>
-                      <TableHead>soTien</TableHead>
-                      <TableHead>soKinhNghiem</TableHead>
-                      <TableHead>soGoiY</TableHead>
-                      <TableHead>capDo</TableHead>
-                      <TableHead>diemSo</TableHead>
+                      <TableHead>Mã Người Chơi</TableHead>
+                      <TableHead>Số Tiền</TableHead>
+                      <TableHead>Số Kinh Nghiệm</TableHead>
+                      <TableHead>Số Gợi Ý</TableHead>
+                      <TableHead>Cấp Độ</TableHead>
+                      <TableHead>Điểm Số</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -518,10 +517,10 @@ export default function PlayersPage() {
               </div>
               <div className="flex space-x-2">
                 <Button variant="outline" size="sm" className="rounded-full" disabled>
-                  Previous
+                  Trang Trước
                 </Button>
                 <Button variant="outline" size="sm" className="rounded-full" disabled>
-                  Next
+                  Trang Tiếp
                 </Button>
               </div>
             </div>
