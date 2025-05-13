@@ -85,14 +85,14 @@ export default function EditAchievementPage() {
     const { name, value } = e.target
     setAchievement((prev) => ({
       ...prev,
-      [name]: name === "giaTri" || name === "yeuCau" ? Number.parseInt(value) || 0 : value,
+      [name]: name === "GiaTriThuong" || name === "YeuCau" ? Number.parseInt(value) || 0 : value,
     }))
   }
 
   const handleSelectChange = (name: string, value: string) => {
     setAchievement((prev) => ({
       ...prev,
-      [name === "maLoaiNhiemVu" ? "LoaiNhiemVu" : name === "maPhanThuong" ? "LoaiPhanThuong" : name]: Number.parseInt(value),
+      [name]: Number.parseInt(value),
     }))
   }
 
@@ -183,10 +183,10 @@ export default function EditAchievementPage() {
                 <div className="grid gap-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="maNhiemVu">maNhiemVu (ID)</Label>
+                      <Label htmlFor="MaNhiemVu">maNhiemVu (ID)</Label>
                       <Input
-                        id="maNhiemVu"
-                        name="maNhiemVu"
+                        id="MaNhiemVu"
+                        name="MaNhiemVu"
                         value={achievement.MaNhiemVu}
                         onChange={handleInputChange}
                         className="rounded-lg"
@@ -194,10 +194,10 @@ export default function EditAchievementPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="tenNhiemVu">tenNhiemVu (Name)</Label>
+                      <Label htmlFor="TenNhiemVu">tenNhiemVu (Name)</Label>
                       <Input
-                        id="tenNhiemVu"
-                        name="tenNhiemVu"
+                        id="TenNhiemVu"
+                        name="TenNhiemVu"
                         value={achievement.TenNhiemVu}
                         onChange={handleInputChange}
                         className="rounded-lg"
@@ -207,10 +207,10 @@ export default function EditAchievementPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="giaTri">giaTri (Value)</Label>
+                      <Label htmlFor="GiaTriThuong">giaTri (Value)</Label>
                       <Input
-                        id="giaTri"
-                        name="giaTri"
+                        id="GiaTriThuong"
+                        name="GiaTriThuong"
                         type="number"
                         value={achievement.GiaTriThuong}
                         onChange={handleInputChange}
@@ -218,10 +218,10 @@ export default function EditAchievementPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="yeuCau">yeuCau (Requirement)</Label>
+                      <Label htmlFor="YeuCau">yeuCau (Requirement)</Label>
                       <Input
-                        id="yeuCau"
-                        name="yeuCau"
+                        id="YeuCau"
+                        name="YeuCau"
                         type="number"
                         value={achievement.YeuCau}
                         onChange={handleInputChange}
@@ -232,10 +232,10 @@ export default function EditAchievementPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="maLoaiNhiemVu">maLoaiNhiemVu (Type)</Label>
+                      <Label htmlFor="LoaiNhiemVu">maLoaiNhiemVu (Type)</Label>
                       <Select
                         value={(achievement.LoaiNhiemVu || 0 ).toString()}
-                        onValueChange={(value) => handleSelectChange("maLoaiNhiemVu", value)}
+                        onValueChange={(value) => handleSelectChange("LoaiNhiemVu", value)}
                       >
                         <SelectTrigger className="rounded-lg">
                           <SelectValue placeholder="Select type" />
@@ -250,10 +250,10 @@ export default function EditAchievementPage() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="maPhanThuong">maPhanThuong (Reward)</Label>
+                      <Label htmlFor="LoaiPhanThuong">maPhanThuong (Reward)</Label>
                       <Select
                         value={achievement.LoaiPhanThuong.toString()}
-                        onValueChange={(value) => handleSelectChange("maPhanThuong", value)}
+                        onValueChange={(value) => handleSelectChange("LoaiPhanThuong", value)}
                       >
                         <SelectTrigger className="rounded-lg">
                           <SelectValue placeholder="Select reward" />
