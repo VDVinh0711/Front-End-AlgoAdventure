@@ -30,12 +30,12 @@ export default function CreateAchievementPage() {
   const [error, setError] = useState<string | null>(null)
   
   const [achievement, setAchievement] = useState({
-    maNhiemVu: "",
-    tenNhiemVu: "",
-    giaTri: 0,
-    yeuCau: 0,
-    maLoaiNhiemVu: 1,
-    maPhanThuong: 1,
+    MaNhiemVu: "",
+    TenNhiemVu: "",
+    GiaTriThuong: 0,
+    YeuCau: 0,
+    LoaiNhiemVu: 1,
+    LoaiPhanThuong: 1,
   })
 
   // Fetch achievement types and reward types from API
@@ -63,8 +63,8 @@ export default function CreateAchievementPage() {
         if (loaiNhiemVuData?.length > 0 && phanThuongData?.length > 0) {
           setAchievement(prev => ({
             ...prev,
-            maLoaiNhiemVu: loaiNhiemVuData[0].MaLoaiNhiemVu,
-            maPhanThuong: phanThuongData[0].MaPhanThuong
+            LoaiNhiemVu: loaiNhiemVuData[0].MaLoaiNhiemVu,
+            LoaiPhanThuong: phanThuongData[0].MaPhanThuong
           }))
         }
         
@@ -87,7 +87,7 @@ export default function CreateAchievementPage() {
     const { name, value } = e.target
     setAchievement((prev) => ({
       ...prev,
-      [name]: name === "giaTri" || name === "yeuCau" ? Number.parseInt(value) || 0 : value,
+      [name]: name === "GiaTriThuong" || name === "YeuCau" ? Number.parseInt(value) || 0 : value,
     }))
   }
 
@@ -105,17 +105,17 @@ export default function CreateAchievementPage() {
     try {
       // Call the API to create the achievement
       await apiController.post('/NhiemVu', {
-        "TenNhiemVu": achievement.tenNhiemVu,
-        "GiaTriThuong": achievement.giaTri,
-        "YeuCau": achievement.yeuCau,
-        "MaPhanThuong": achievement.maPhanThuong,
-        "MaLoaiNhiemVu": achievement.maLoaiNhiemVu
+        "TenNhiemVu": achievement.TenNhiemVu,
+        "GiaTriThuong": achievement.GiaTriThuong,
+        "YeuCau": achievement.YeuCau,
+        "MaPhanThuong": achievement.LoaiPhanThuong,
+        "MaLoaiNhiemVu": achievement.LoaiNhiemVu
       });
       
       // Show success toast
       toast({
         title: "✅ Success!",
-        description: `Achievement "${achievement.tenNhiemVu}" has been created successfully.`,
+        description: `Achievement "${achievement.TenNhiemVu}" has been created successfully.`,
         variant: "default",
         className: "bg-green-100 border-green-500 border",
       });
@@ -186,11 +186,11 @@ export default function CreateAchievementPage() {
                 <div className="grid gap-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="maNhiemVu">maNhiemVu (ID)</Label>
+                      <Label htmlFor="MaNhiemVu">maNhiemVu (ID)</Label>
                       <Input
-                        id="maNhiemVu"
-                        name="maNhiemVu"
-                        value={achievement.maNhiemVu}
+                        id="MaNhiemVu"
+                        name="MaNhiemVu"
+                        value={achievement.MaNhiemVu}
                         onChange={handleInputChange}
                         className="rounded-lg"
                         placeholder="e.g. 14"
@@ -198,14 +198,13 @@ export default function CreateAchievementPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="tenNhiemVu">tenNhiemVu (Name)</Label>
+                      <Label htmlFor="TenNhiemVu">tenNhiemVu (Name)</Label>
                       <Input
-                        id="tenNhiemVu"
-                        name="tenNhiemVu"
-                        value={achievement.tenNhiemVu}
+                        id="TenNhiemVu"
+                        name="TenNhiemVu"
+                        value={achievement.TenNhiemVu}
                         onChange={handleInputChange}
                         className="rounded-lg"
-                        placeholder="e.g. Kiếm 50 đồng"
                         required
                       />
                     </div>
@@ -213,28 +212,26 @@ export default function CreateAchievementPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="giaTri">giaTri (Value)</Label>
+                      <Label htmlFor="GiaTriThuong">giaTri (Value)</Label>
                       <Input
-                        id="giaTri"
-                        name="giaTri"
+                        id="GiaTriThuong"
+                        name="GiaTriThuong"
                         type="number"
-                        value={achievement.giaTri}
+                        value={achievement.GiaTriThuong}
                         onChange={handleInputChange}
                         className="rounded-lg"
-                        placeholder="e.g. 50"
                         required
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="yeuCau">yeuCau (Requirement)</Label>
+                      <Label htmlFor="YeuCau">yeuCau (Requirement)</Label>
                       <Input
-                        id="yeuCau"
-                        name="yeuCau"
+                        id="YeuCau"
+                        name="YeuCau"
                         type="number"
-                        value={achievement.yeuCau}
+                        value={achievement.YeuCau}
                         onChange={handleInputChange}
                         className="rounded-lg"
-                        placeholder="e.g. 50"
                         required
                       />
                     </div>
@@ -242,10 +239,10 @@ export default function CreateAchievementPage() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="maLoaiNhiemVu">maLoaiNhiemVu (Type)</Label>
+                      <Label htmlFor="LoaiNhiemVu">maLoaiNhiemVu (Type)</Label>
                       <Select
-                        value={achievement.maLoaiNhiemVu.toString()}
-                        onValueChange={(value) => handleSelectChange("maLoaiNhiemVu", value)}
+                        value={achievement.LoaiNhiemVu.toString()}
+                        onValueChange={(value) => handleSelectChange("LoaiNhiemVu", value)}
                       >
                         <SelectTrigger className="rounded-lg">
                           <SelectValue placeholder="Select type" />
@@ -260,10 +257,10 @@ export default function CreateAchievementPage() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="maPhanThuong">maPhanThuong (Reward)</Label>
+                      <Label htmlFor="LoaiPhanThuong">maPhanThuong (Reward)</Label>
                       <Select
-                        value={achievement.maPhanThuong.toString()}
-                        onValueChange={(value) => handleSelectChange("maPhanThuong", value)}
+                        value={achievement.LoaiPhanThuong.toString()}
+                        onValueChange={(value) => handleSelectChange("LoaiPhanThuong", value)}
                       >
                         <SelectTrigger className="rounded-lg">
                           <SelectValue placeholder="Select reward" />

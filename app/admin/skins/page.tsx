@@ -95,7 +95,7 @@ export default function SkinsPage() {
           <div className="flex items-center mb-6">
             <Link href="/admin" className="flex items-center text-rose-500 hover:text-rose-600">
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Quay lại Dashboard
+              Quay lại Trang Chủ
             </Link>
           </div>
 
@@ -199,6 +199,13 @@ export default function SkinsPage() {
                 </Button>
               </div>
             </div>
+          </div>
+          
+          {/* Management Button - Added to match the image */}
+          <div className="mt-6 flex justify-center">
+            <Button className="bg-rose-500 hover:bg-rose-600 text-white px-6 py-2 rounded-full">
+              Quản Lý Bộ Sưu Tập
+            </Button>
           </div>
         </div>
       </main>

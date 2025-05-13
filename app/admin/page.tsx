@@ -49,10 +49,10 @@ export default function AdminPage() {
                   <Award className="h-5 w-5" />
                   Nhiệm Vụ
                 </CardTitle>
-                <CardDescription className="text-rose-100">Quản lý nhiệm vụ</CardDescription>
+                <CardDescription className="text-rose-100">Quản lý nhiệm vụ trong trò chơi</CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
-                <p className="text-sm text-gray-600">Tạo và cấu hình nhiệm vụ và phần thưởng cho người chơi.</p>
+                <p className="text-sm text-gray-600">Tạo và cấu hình nhiệm vụ và phần thưởng cho người chơi trong trò chơi.</p>
               </CardContent>
               <CardFooter>
                 <Link href="/admin/achievements" className="w-full">
