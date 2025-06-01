@@ -46,8 +46,14 @@ export class AuthController {
 
     private constructor(baseUrl: string = 'https://192.168.11.1:5001/api') {
         this.baseUrl = baseUrl;
-        this.token = localStorage.getItem(SafeKeyLocalStorage.Token);
-        this.refreshToken = localStorage.getItem(SafeKeyLocalStorage.RefreshToken);
+        // Only access localStorage if we're in the browser
+        if (typeof window !== 'undefined') {
+            this.token = localStorage.getItem(SafeKeyLocalStorage.Token);
+            this.refreshToken = localStorage.getItem(SafeKeyLocalStorage.RefreshToken);
+        } else {
+            this.token = null;
+            this.refreshToken = null;
+        }
         this._isAuthenticated = Boolean(this.token);
     }
 
@@ -195,7 +201,8 @@ export class AuthController {
     }
 
     private async _refreshAuthToken(): Promise<boolean> {
-        const storedRefreshToken = this.refreshToken || localStorage.getItem(SafeKeyLocalStorage.RefreshToken);
+        const storedRefreshToken = this.refreshToken || 
+            (typeof window !== 'undefined' ? localStorage.getItem(SafeKeyLocalStorage.RefreshToken) : null);
         if (!storedRefreshToken) return false;
 
         try {
@@ -229,11 +236,14 @@ export class AuthController {
     }
 
     private saveTokensToStorage(): void {
-        if (this.refreshToken) {
-            localStorage.setItem(SafeKeyLocalStorage.RefreshToken, this.refreshToken);
-        }
-        if (this.token) {
-            localStorage.setItem(SafeKeyLocalStorage.Token, this.token);
+        // Only save to localStorage if we're in the browser
+        if (typeof window !== 'undefined') {
+            if (this.refreshToken) {
+                localStorage.setItem(SafeKeyLocalStorage.RefreshToken, this.refreshToken);
+            }
+            if (this.token) {
+                localStorage.setItem(SafeKeyLocalStorage.Token, this.token);
+            }
         }
     }
 
@@ -277,7 +287,10 @@ export class AuthController {
         this.refreshToken = null;
         this._isAuthenticated = false;
         this._userData = null;
-        localStorage.removeItem(SafeKeyLocalStorage.Token);
-        localStorage.removeItem(SafeKeyLocalStorage.RefreshToken);
+        // Only remove from localStorage if we're in the browser
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem(SafeKeyLocalStorage.Token);
+            localStorage.removeItem(SafeKeyLocalStorage.RefreshToken);
+        }
     }
 } 

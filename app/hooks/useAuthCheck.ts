@@ -3,12 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthController } from '../services/AuthController';
-import { is } from 'date-fns/locale';
 
 export const useAuthCheck = () => {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
-    const authController = new AuthController();
+    const authController = AuthController.getInstance();
 
     useEffect(() => {
         const checkAuth = async () => {

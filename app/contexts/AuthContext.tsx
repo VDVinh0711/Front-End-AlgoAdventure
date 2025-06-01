@@ -37,10 +37,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userData, setUserData] = useState<UserData | null>(null);
+    const [authController, setAuthController] = useState<AuthController | null>(null);
     const router = useRouter();
-    const authController = AuthController.getInstance();
+
+    // Initialize AuthController only on client side
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setAuthController(AuthController.getInstance());
+        }
+    }, []);
 
     useEffect(() => {
+        if (!authController) return;
+        
         const checkAuthStatus = async () => {
             try {
                 setIsLoading(true);
@@ -61,9 +70,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
 
         checkAuthStatus();
-    }, []);
+    }, [authController]);
 
     const login = async (username: string, password: string) => {
+        if (!authController) return { success: false, error: { message: 'Auth not initialized' } };
+        
         setIsLoading(true);
         try {
             const result = await authController.authenticate(username, password);
@@ -89,6 +100,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const logout = () => {
+        if (!authController) return;
+        
         authController.logout();
         setIsAuthenticated(false);
         setUserData(null);
@@ -96,6 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const hasRole = (role: string) => {
+        if (!authController) return false;
         return authController.hasRole(role);
     };
 
