@@ -34,21 +34,28 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+    // Initialize with SSR-safe defaults
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userData, setUserData] = useState<UserData | null>(null);
     const [authController, setAuthController] = useState<AuthController | null>(null);
+    const [isClient, setIsClient] = useState(false);
     const router = useRouter();
 
-    // Initialize AuthController only on client side
+    // Check if we're on the client side
     useEffect(() => {
+        setIsClient(true);
         if (typeof window !== 'undefined') {
             setAuthController(AuthController.getInstance());
         }
     }, []);
 
     useEffect(() => {
-        if (!authController) return;
+        // Only proceed if we're on the client and have an auth controller
+        if (!isClient || !authController) {
+            setIsLoading(false);
+            return;
+        }
         
         const checkAuthStatus = async () => {
             try {
@@ -70,7 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
 
         checkAuthStatus();
-    }, [authController]);
+    }, [authController, isClient]);
 
     const login = async (username: string, password: string) => {
         if (!authController) return { success: false, error: { message: 'Auth not initialized' } };

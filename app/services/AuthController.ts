@@ -46,19 +46,35 @@ export class AuthController {
 
     private constructor(baseUrl: string = 'https://192.168.11.1:5001/api') {
         this.baseUrl = baseUrl;
+        // Initialize with null values for SSR safety
+        this.token = null;
+        this.refreshToken = null;
+        this._isAuthenticated = false;
+        
+        // Only access localStorage after ensuring we're in the browser
+        this.initializeFromStorage();
+    }
+
+    private initializeFromStorage(): void {
         // Only access localStorage if we're in the browser
-        if (typeof window !== 'undefined') {
-            this.token = localStorage.getItem(SafeKeyLocalStorage.Token);
-            this.refreshToken = localStorage.getItem(SafeKeyLocalStorage.RefreshToken);
-        } else {
-            this.token = null;
-            this.refreshToken = null;
+        if (typeof window !== 'undefined' && window.localStorage) {
+            try {
+                this.token = localStorage.getItem(SafeKeyLocalStorage.Token);
+                this.refreshToken = localStorage.getItem(SafeKeyLocalStorage.RefreshToken);
+                this._isAuthenticated = Boolean(this.token);
+            } catch (error) {
+                console.warn('Failed to access localStorage:', error);
+                // Fallback to default values
+                this.token = null;
+                this.refreshToken = null;
+                this._isAuthenticated = false;
+            }
         }
-        this._isAuthenticated = Boolean(this.token);
     }
 
     public static getInstance(baseUrl: string = 'https://192.168.11.1:5001/api'): AuthController {
-        if (!AuthController.instance) {
+        // Only create instance if we don't have one or if we're in the browser
+        if (!AuthController.instance || (typeof window !== 'undefined' && !AuthController.instance.token && !AuthController.instance.refreshToken)) {
             AuthController.instance = new AuthController(baseUrl);
         }
         return AuthController.instance;
@@ -202,7 +218,15 @@ export class AuthController {
 
     private async _refreshAuthToken(): Promise<boolean> {
         const storedRefreshToken = this.refreshToken || 
-            (typeof window !== 'undefined' ? localStorage.getItem(SafeKeyLocalStorage.RefreshToken) : null);
+            (typeof window !== 'undefined' && window.localStorage ? 
+                (() => {
+                    try {
+                        return localStorage.getItem(SafeKeyLocalStorage.RefreshToken);
+                    } catch (error) {
+                        console.warn('Failed to access localStorage for refresh token:', error);
+                        return null;
+                    }
+                })() : null);
         if (!storedRefreshToken) return false;
 
         try {
@@ -237,12 +261,17 @@ export class AuthController {
 
     private saveTokensToStorage(): void {
         // Only save to localStorage if we're in the browser
-        if (typeof window !== 'undefined') {
-            if (this.refreshToken) {
-                localStorage.setItem(SafeKeyLocalStorage.RefreshToken, this.refreshToken);
-            }
-            if (this.token) {
-                localStorage.setItem(SafeKeyLocalStorage.Token, this.token);
+        if (typeof window !== 'undefined' && window.localStorage) {
+            try {
+                if (this.refreshToken) {
+                    localStorage.setItem(SafeKeyLocalStorage.RefreshToken, this.refreshToken);
+                }
+                if (this.token) {
+                    localStorage.setItem(SafeKeyLocalStorage.Token, this.token);
+                }
+            } catch (error) {
+                console.warn('Failed to save tokens to localStorage:', error);
+                // Continue without saving to localStorage
             }
         }
     }
@@ -288,9 +317,14 @@ export class AuthController {
         this._isAuthenticated = false;
         this._userData = null;
         // Only remove from localStorage if we're in the browser
-        if (typeof window !== 'undefined') {
-            localStorage.removeItem(SafeKeyLocalStorage.Token);
-            localStorage.removeItem(SafeKeyLocalStorage.RefreshToken);
+        if (typeof window !== 'undefined' && window.localStorage) {
+            try {
+                localStorage.removeItem(SafeKeyLocalStorage.Token);
+                localStorage.removeItem(SafeKeyLocalStorage.RefreshToken);
+            } catch (error) {
+                console.warn('Failed to remove tokens from localStorage:', error);
+                // Continue without clearing localStorage
+            }
         }
     }
 } 
