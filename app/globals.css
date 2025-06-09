@@ -92,3 +92,26 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Games Slider Animation */
+@keyframes slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-slide {
+  animation: slide 20s linear infinite;
+}
+
+.animate-slide:hover {
+  animation-play-state: paused;
+}
+
+/* Game Card Background */
+.game-card-bg {
+  background-color: #f472b6;
+}

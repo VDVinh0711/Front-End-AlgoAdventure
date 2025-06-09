@@ -3,6 +3,42 @@ import Link from "next/link"
 import { Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Navigation from "@/components/ui/navigation"
+import GameCard from "@/components/ui/GameCard"
+
+// Games data
+const gamesData = [
+  { 
+    imageSrc: "/images/games/logo_game_mergememe.jpg", 
+    name: "Merge Meme", 
+    description: "Trò chơi ghép hình thú vị" 
+  },
+  { 
+    imageSrc: "/images/games/logo_game_bubbe_around.png", 
+    name: "Bubble Around", 
+    description: "Game bắn bóng hấp dẫn" 
+  },
+  { 
+    imageSrc: "/images/games/logo_game_mergememe.jpg", 
+    name: "Adventure Quest", 
+    description: "Phiêu lưu đầy thử thách" 
+  },
+  { 
+    imageSrc: "/images/games/logo_game_bubbe_around.png", 
+    name: "Racing Pro", 
+    description: "Đua xe tốc độ cao" 
+  },
+  { 
+    imageSrc: "/images/games/logo_game_mergememe.jpg", 
+    name: "Puzzle Master", 
+    description: "Thử thách trí tuệ" 
+  },
+  { 
+    imageSrc: "/images/games/logo_game_bubbe_around.png", 
+    name: "Card Battle", 
+    description: "Chiến đấu thẻ bài" 
+  }
+]
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-rose-50">
@@ -117,26 +153,95 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-rose-500 mb-6 text-center">Chào Mừng Đến Với PURUS GAME</h2>
 
             <p className="text-lg mb-4">
-              PURUS GAME là một studio phát triển game mobile hàng đầu, chuyên tạo ra những trải nghiệm gaming thú vị, 
-              hấp dẫn và sáng tạo cho người chơi ở mọi lứa tuổi. Với trụ sở chính tại Singapore, chúng tôi đã phát triển 
-              những tựa game đáng nhớ từ năm 2025.
+            PURUSGAME là một studio phát triển game mobile, được thành lập từ năm 2020. Chúng tôi chuyên cung cấp dịch vụ outsourcing, sản xuất playable ads và phát hành các tựa game di động.
             </p>
 
             <p className="text-lg mb-4">
-              Danh mục game đa dạng của chúng tôi bao gồm trò chơi giải đố phiêu lưu, game đua xe, game bài và nhiều thể loại khác - 
-              mỗi game đều được thiết kế với sự kết hợp đặc trưng của đồ họa đầy màu sắc, lối chơi trực quan và sự chú ý đến từng 
-              chi tiết giúp người chơi luôn muốn quay lại.
+            Với đội ngũ giàu kinh nghiệm, PURUSGAME đã tham gia nhiều dự án thuộc các thể loại khác nhau như game giải đố, game đua xe, game thẻ bài, v.v. Mỗi sản phẩm đều được chúng tôi chú trọng vào yếu tố hình ảnh, trải nghiệm người chơi và tính hoàn thiện.
             </p>
 
             <p className="text-lg mb-6">
-              Tại Gametamin, chúng tôi tin rằng "sản phẩm tuyệt vời được tạo ra bởi những đội ngũ tuyệt vời." 
-              Triết lý này định hướng mọi hoạt động của chúng tôi, từ quy trình phát triển hợp tác đến mối quan hệ 
-              với cộng đồng người chơi. Chúng tôi không ngừng đẩy ranh giới của game mobile đồng thời duy trì cam kết 
-              về chất lượng và sự hài lòng của người chơi.
+            Chúng tôi tin rằng sự hợp tác hiệu quả và tinh thần làm việc nghiêm túc là nền tảng để tạo ra những sản phẩm chất lượng, mang lại giá trị cho cả đối tác lẫn người chơi.
             </p>
 
             <div className="flex justify-center gap-4 flex-wrap">
              
+            </div>
+          </div>
+        </section>
+
+        {/* Team Section */}
+        <section className="container mx-auto px-4 py-16 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold text-rose-500 mb-12 text-center">Team</h2>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Khiêm Banner */}
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                <div className="p-8 text-center">
+                  <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden bg-gray-200">
+                    <Image
+                      src="/images/team/CEO.png"
+                      alt="Khiêm - Production & Publishing Lead"
+                      width={128}
+                      height={128}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <h3 className="text-2xl font-bold text-rose-500 mb-2">Khiêm</h3>
+                  <p className="text-lg text-gray-600 mb-4">Production & Publishing Lead</p>
+                  <div className="border-t border-gray-200 pt-4">
+                    <p className="text-gray-700">
+                      Chuyên gia dẫn dắt quy trình sản xuất và phát hành game, 
+                      đảm bảo chất lượng và thời gian ra mắt sản phẩm.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Hải Banner */}
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                <div className="p-8 text-center">
+                  <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden bg-gray-200">
+                    <Image
+                      src="/images/team/CTO.png"
+                      alt="Hải - Outsourcing Lead"
+                      width={128}
+                      height={128}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <h3 className="text-2xl font-bold text-rose-500 mb-2">Hải</h3>
+                  <p className="text-lg text-gray-600 mb-4">Outsourcing Lead</p>
+                  <div className="border-t border-gray-200 pt-4">
+                    <p className="text-gray-700">
+                      Quản lý và điều phối các dự án outsourcing, 
+                      tối ưu hóa nguồn lực và chất lượng sản phẩm.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Games Slider Section */}
+        <section className="container mx-auto px-4 py-16 relative z-10">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold text-rose-500 mb-12 text-center">Trò Chơi Của Chúng Tôi</h2>
+            
+            <div className="relative overflow-hidden">
+              <div className="flex animate-slide space-x-6">
+                {/* Render games twice for seamless loop */}
+                {[...gamesData, ...gamesData].map((game, index) => (
+                  <GameCard
+                    key={index}
+                    imageSrc={game.imageSrc}
+                    name={game.name}
+                    description={game.description}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </section>
