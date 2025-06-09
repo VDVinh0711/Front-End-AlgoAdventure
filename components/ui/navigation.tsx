@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Play, User, LogOut, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/app/contexts/AuthContext"
@@ -28,16 +29,16 @@ export default function Navigation() {
   return (
     <header className="container mx-auto py-4 px-4 flex items-center justify-between">
       <Link href="/" className="flex items-center w-fit">
-        <div className="relative h-10 w-20">
-          <div className="absolute inset-0 bg-rose-500 rounded-full flex items-center justify-center">
-            <Play className="h-5 w-5 text-white ml-1" />
-          </div>
-          <div
-            className="absolute inset-0 border-2 border-rose-500 rounded-full"
-            style={{ clipPath: "polygon(0 0, 50% 0, 50% 100%, 0 100%)" }}
-          ></div>
+        <div className="relative h-32 w-32">
+          <Image
+            src="/images/games/logo/logo_company.png"
+            alt="PURUS GAME Logo"
+            width={500}
+            height={500}
+            className="object-contain"
+          />
         </div>
-        <span className="text-rose-500 font-bold ml-2 text-sm">PURUS GAME</span>
+      {/*  <span className="text-rose-500 font-bold ml-3 text-sm">PURUS GAME</span>   */}
       </Link>
 
       <nav className="hidden md:flex items-center space-x-2">
