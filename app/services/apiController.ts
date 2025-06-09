@@ -1,25 +1,16 @@
 "use client";
 
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AuthController } from './AuthController';
-import { SafeKeyLocalStorage } from './Ultils/safeKeyLocalStorage';
+import { BaseHttpClient } from './baseHttpClient';
 
-export class ApiController
+export class ApiController extends BaseHttpClient
 {
-    private readonly baseUrl: string;
-    private axiosInstance: AxiosInstance;
     private authController: AuthController;
 
-    constructor(baseUrl: string = 'https://192.168.11.1:5001/api') {
-        this.baseUrl = baseUrl;
+    constructor(baseUrl: string = 'https://weevil-proud-definitely.ngrok-free.app/api') {
+        super(baseUrl);
         this.authController = AuthController.getInstance(baseUrl);
-        this.axiosInstance = axios.create({
-            baseURL: this.baseUrl,
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': '*/*'
-            }
-        });
 
         // Add request interceptor to check token before each request
         this.axiosInstance.interceptors.request.use(
@@ -96,8 +87,7 @@ export class ApiController
                 config.params = params;
             }
             
-            const response: AxiosResponse<T> = await this.axiosInstance.get(endpoint, config);
-            return response.data;
+            return await super.get<T>(endpoint, config);
         } catch (error) {
             console.error(`Error fetching data from ${endpoint}:`, error);
             throw error;
@@ -107,8 +97,7 @@ export class ApiController
     // Generic POST method with authorization
     public async post<T>(endpoint: string, data: any): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.axiosInstance.post(endpoint, data);
-            return response.data;
+            return await super.post<T>(endpoint, data);
         } catch (error) {
             console.error(`Error posting data to ${endpoint}:`, error);
             throw error;
@@ -118,8 +107,7 @@ export class ApiController
     // Generic PUT method with authorization
     public async put<T>(endpoint: string, data: any): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.axiosInstance.put(endpoint, data);
-            return response.data;
+            return await super.put<T>(endpoint, data);
         } catch (error) {
             console.error(`Error updating data at ${endpoint}:`, error);
             throw error;
@@ -129,8 +117,7 @@ export class ApiController
     // Generic DELETE method with authorization
     public async delete<T>(endpoint: string): Promise<T> {
         try {
-            const response: AxiosResponse<T> = await this.axiosInstance.delete(endpoint);
-            return response.data;
+            return await super.delete<T>(endpoint);
         } catch (error) {
             console.error(`Error deleting data at ${endpoint}:`, error);
             throw error;

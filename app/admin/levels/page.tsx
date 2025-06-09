@@ -34,7 +34,6 @@ interface Level {
   maCapDo: number
   duLieuCapDo: string
   thoiGianCapNhat: string
-  CAPDONGUOICHOIs: any[]
 }
 
 export default function LevelsPage() {
@@ -55,8 +54,33 @@ export default function LevelsPage() {
       try {
         setIsLoading(true)
         const apiController = new ApiController()
-        const data = await apiController.get<Level[]>('/CapDo')
-        setLevels(data || [])
+        const response = await apiController.get<any>('/CapDo')
+        
+        console.log("API Response:", response)
+        console.log("Response type:", typeof response)
+        console.log("Is array:", Array.isArray(response))
+        
+        // Handle different response formats
+        let levelsData: Level[] = []
+        if (Array.isArray(response)) {
+          levelsData = response
+        } else if (response && typeof response === 'object') {
+          // Check if the response has a property containing the array
+          const possibleArrayKeys = ['data', 'levels', 'capDo', 'result', 'items']
+          for (const key of possibleArrayKeys) {
+            if (response[key] && Array.isArray(response[key])) {
+              levelsData = response[key]
+              break
+            }
+          }
+          // If no array found in nested properties, log the structure
+          if (levelsData.length === 0) {
+            console.log("Response keys:", Object.keys(response))
+          }
+        }
+        
+        console.log("Processed levels data:", levelsData)
+        setLevels(levelsData)
         setError(null)
       } catch (err) {
         console.error("Error fetching levels:", err)
@@ -70,8 +94,7 @@ export default function LevelsPage() {
     fetchLevels()
   }, [])
 
-  // Filter levels based on search term
-  const filteredLevels = levels.filter((level) => level.maCapDo.toString().includes(searchTerm))
+  const filteredLevels = Array.isArray(levels) ? levels.filter((level) => level.maCapDo.toString().includes(searchTerm)) : []
   
   // Calculate total pages
   const totalPages = Math.ceil(filteredLevels.length / levelsPerPage)

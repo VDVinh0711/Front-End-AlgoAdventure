@@ -32,6 +32,7 @@ import {
   LineChart,
 } from "recharts"
 import Navigation from "@/components/ui/navigation"
+import { ApiController } from "@/app/services/apiController"
 
 // Define the player interface to match API response
 interface Player {
@@ -60,24 +61,34 @@ export default function PlayersPage() {
       setIsLoading(true)
       setError(null)
       try {
-        // Use the full server URL with HTTPS
-        const response = await fetch('https://192.168.11.1:5001/api/NguoiChoi', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-          // Add this to handle HTTPS connection with self-signed certificates
-          // or certificates that might not be trusted
-          cache: 'no-store',
-        })
+        const apiController = new ApiController()
+        const data = await apiController.get<Player[]>('/NguoiChoi')
         
-        if (!response.ok) {
-          throw new Error(`Failed to fetch player data: ${response.status} ${response.statusText}`)
+        console.log("Players API Response:", data)
+        console.log("Response type:", typeof data)
+        console.log("Is array:", Array.isArray(data))
+        
+        // Handle different response formats
+        let playersData: Player[] = []
+        if (Array.isArray(data)) {
+          playersData = data
+        } else if (data && typeof data === 'object') {
+          // Check if the response has a property containing the array
+          const possibleArrayKeys = ['data', 'players', 'nguoiChoi', 'result', 'items']
+          for (const key of possibleArrayKeys) {
+            if ((data as any)[key] && Array.isArray((data as any)[key])) {
+              playersData = (data as any)[key]
+              break
+            }
+          }
+          // If no array found in nested properties, log the structure
+          if (playersData.length === 0) {
+            console.log("Response keys:", Object.keys(data))
+          }
         }
         
-        const data = await response.json()
-        setPlayers(data)
+        console.log("Processed players data:", playersData)
+        setPlayers(playersData)
       } catch (error) {
         console.error('Error fetching player data:', error)
         setError(`Error connecting to API: ${error instanceof Error ? error.message : String(error)}`)
@@ -92,9 +103,9 @@ export default function PlayersPage() {
   }, [])
 
   // Filter players based on search term
-  const filteredPlayers = players.filter((player) => 
+  const filteredPlayers = Array.isArray(players) ? players.filter((player) => 
     player.maNguoiChoi.toString().includes(searchTerm)
-  )
+  ) : []
 
   useEffect(() => {
     if (players.length > 0) {
@@ -291,21 +302,12 @@ export default function PlayersPage() {
     setIsLoading(true)
 
     try {
-      // Call API to delete player with full URL
-      const response = await fetch(`https://192.168.11.1:5001/api/NguoiChoi/${playerToDelete}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        cache: 'no-store',
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete player')
-      }
+      const apiController = new ApiController()
+      await apiController.delete(`/NguoiChoi/${playerToDelete}`)
       
       // Update the UI by removing the deleted player
       setPlayers(players.filter(player => player.maNguoiChoi !== playerToDelete))
+      setError(null) // Clear any previous errors
     } catch (error) {
       console.error('Error deleting player:', error)
       setError(`Error deleting player: ${error instanceof Error ? error.message : String(error)}`)

@@ -1,14 +1,25 @@
-import axios, { AxiosResponse } from 'axios';
 import { SafeKeyLocalStorage } from './Ultils/safeKeyLocalStorage';
+import { BaseHttpClient } from './baseHttpClient';
 
 interface LoginRequest {
     TaiKhoan: string;
     MatKhau: string;
 }
 
+interface UserData {
+    maNguoiDung: string;
+    taiKhoan: string;
+    email: string;
+    ten: string;
+    phuongThucDangNhap: string;
+}
+
 interface DataUserResponse {
-    IDUser?: string;
-    UserName?: string;
+    maNguoiDung?: string;
+    taiKhoan?: string;
+    email?: string;
+    ten?: string;
+    phuongThucDangNhap?: string;
     RoleUsers?: string[] | string;
     Role?: string[] | string;
     Roles?: string[] | string;
@@ -23,8 +34,7 @@ interface AuthTokens {
 }
 
 interface LoginResponse extends AuthTokens {
-    idUser?: string;
-    nameUser?: string;
+    user: UserData;
 }
 
 export interface AuthError {
@@ -33,8 +43,7 @@ export interface AuthError {
     status?: number;
 }
 
-export class AuthController {
-    private readonly baseUrl: string;
+export class AuthController extends BaseHttpClient {
     private token: string | null;
     private refreshToken: string | null;
     private _isAuthenticated: boolean = false;
@@ -44,8 +53,8 @@ export class AuthController {
     // Singleton instance
     private static instance: AuthController;
 
-    private constructor(baseUrl: string = 'https://192.168.11.1:5001/api') {
-        this.baseUrl = baseUrl;
+    private constructor(baseUrl: string = 'https://weevil-proud-definitely.ngrok-free.app/api') {
+        super(baseUrl);
         // Initialize with null values for SSR safety
         this.token = null;
         this.refreshToken = null;
@@ -72,7 +81,7 @@ export class AuthController {
         }
     }
 
-    public static getInstance(baseUrl: string = 'https://192.168.11.1:5001/api'): AuthController {
+    public static getInstance(baseUrl: string = 'https://weevil-proud-definitely.ngrok-free.app/api'): AuthController {
         // Only create instance if we don't have one or if we're in the browser
         if (!AuthController.instance || (typeof window !== 'undefined' && !AuthController.instance.token && !AuthController.instance.refreshToken)) {
             AuthController.instance = new AuthController(baseUrl);
@@ -94,28 +103,29 @@ export class AuthController {
                 TaiKhoan: username,
                 MatKhau: password
             };
-            const response: AxiosResponse<LoginResponse> = await axios.post(
-                `${this.baseUrl}/Authentication/login`,
-                loginData,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': '*/*'
-                    }
-                }
-            );
+            const response = await this.post<LoginResponse>('/Authentication/login', loginData);
           
-            if (response.data.token && response.data.refreshToken) {
-                this.token = response.data.token;
-                this.refreshToken = response.data.refreshToken;
+            if (response.token && response.refreshToken && response.user) {
+                this.token = response.token;
+                this.refreshToken = response.refreshToken;
                 this.saveTokensToStorage();
                 this._isAuthenticated = true;
-                await this.fetchUserData();
+                
+                this._userData = {
+                    maNguoiDung: response.user.maNguoiDung,
+                    taiKhoan: response.user.taiKhoan,
+                    email: response.user.email,
+                    ten: response.user.ten,
+                    phuongThucDangNhap: response.user.phuongThucDangNhap,
+                    RoleUsers: this.extractRolesFromToken(this.token)
+                };
+                
+                console.log("Login successful. User data:", this._userData);
                 return { success: true };
             }
             return { 
                 success: false, 
-                error: { message: 'Invalid response from server. Missing token.' } 
+                error: { message: 'Invalid response from server. Missing token or user data.' } 
             };
         } catch (error: any) {
             this._isAuthenticated = false;
@@ -149,36 +159,29 @@ export class AuthController {
                 return null;
             }
             
-            const response: AxiosResponse<DataUserResponse> = await axios.get(
-                `${this.baseUrl}/NguoiDung/getInforUser`,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${this.token}`
-                    }
+            const response = await this.get<DataUserResponse>('/NguoiDung/getInforUser', {
+                headers: {
+                    'Authorization': `Bearer ${this.token}`
                 }
-            );
+            });
 
-            if (!response.data) {
+            if (!response) {
                 console.log("fetchUserData: No data in response");
                 this._userData = null;
                 return null;
             }
             
             // Log entire response to see what fields are available
-            console.log("API Response data:", JSON.stringify(response.data));
+            console.log("API Response data:", JSON.stringify(response));
  
-            // Check for different possible role field names in the API response
-            const roleData = response.data.RoleUsers || 
-                             response.data.Role || 
-                             response.data.Roles || 
-                             response.data.UserRoles ||
-                             response.data.RoleUse;
-                             
-            console.log("Role data found:", roleData);
-                             
-            // Ensure roles is an array if it exists
+            // Extract roles from token if not present in response
             let roles: string[] = [];
+            const roleData = response.RoleUsers || 
+                             response.Role || 
+                             response.Roles || 
+                             response.UserRoles ||
+                             response.RoleUse;
+                             
             if (roleData) {
                 // Handle if roles is a string or array
                 if (typeof roleData === 'string') {
@@ -187,11 +190,19 @@ export class AuthController {
                 } else if (Array.isArray(roleData)) {
                     roles = roleData as string[];
                 }
+            } else {
+                // If no roles in API response, extract from token
+                roles = this.extractRolesFromToken(this.token);
             }
             
+            console.log("Role data found:", roles);
+            
             this._userData = {
-                IDUser: response.data.IDUser,
-                UserName: response.data.UserName,
+                maNguoiDung: response.maNguoiDung,
+                taiKhoan: response.taiKhoan,
+                email: response.email,
+                ten: response.ten,
+                phuongThucDangNhap: response.phuongThucDangNhap,
                 RoleUsers: roles
             };
             
@@ -205,7 +216,6 @@ export class AuthController {
     }
 
     public async refreshAuthToken(): Promise<boolean> {
-        // Prevent multiple simultaneous refresh attempts
         if (this.refreshPromise) {
             return this.refreshPromise;
         }
@@ -230,30 +240,22 @@ export class AuthController {
         if (!storedRefreshToken) return false;
 
         try {
-            const response: AxiosResponse<AuthTokens> = await axios.post(
-                `${this.baseUrl}/Authentication/refresh-token`,
-                { refreshToken: storedRefreshToken },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': '*/*'
-                    }
-                }
+            // Send as query parameter since API expects string parameter
+            const response = await this.post<AuthTokens>(
+                `/Authentication/refreshToken?refreshToken=${encodeURIComponent(storedRefreshToken)}`, 
+                null
             );
 
-            if (response.data.token && response.data.refreshToken) {
-                this.token = response.data.token;
-                this.refreshToken = response.data.refreshToken;
+            if (response.token && response.refreshToken) {
+                this.token = response.token;
+                this.refreshToken = response.refreshToken;
                 this.saveTokensToStorage();
                 this._isAuthenticated = true;
                 return true;
             }
-            
-            // If we didn't get valid tokens, clear the auth state
             this.logout();
             return false;
         } catch (error) {
-            // If refresh fails, clear the auth state
             this.logout();
             return false;
         }
@@ -278,13 +280,13 @@ export class AuthController {
 
     public async checkAuthStatus(): Promise<boolean> {
         // If we already have userData, we're authenticated
-        if (this._userData?.IDUser) {
+        if (this._userData?.maNguoiDung) {
             return true;
         }
         
         // Try to get user data with current token
         const userData = await this.fetchUserData();
-        if (userData?.IDUser) {
+        if (userData?.maNguoiDung) {
             return true;
         }
         
@@ -309,6 +311,31 @@ export class AuthController {
 
     public getToken(): string | null {
         return this.token;
+    }
+
+    private extractRolesFromToken(token: string): string[] {
+        try {
+            // JWT tokens have 3 parts separated by dots: header.payload.signature
+            const payload = token.split('.')[1];
+            if (!payload) return [];
+            
+            // Decode base64 payload
+            const decodedPayload = JSON.parse(atob(payload));
+            
+            // Extract role claim from token
+            const roleData = decodedPayload.role;
+            
+            if (Array.isArray(roleData)) {
+                return roleData;
+            } else if (typeof roleData === 'string') {
+                return [roleData];
+            }
+            
+            return [];
+        } catch (error) {
+            console.warn('Failed to extract roles from token:', error);
+            return [];
+        }
     }
 
     public logout(): void {
