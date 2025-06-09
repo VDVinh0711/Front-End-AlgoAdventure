@@ -17,6 +17,8 @@ export default function Navigation() {
   const router = useRouter()
   const { isAuthenticated, userData, logout, hasRole } = useAuth()
   
+  // Debug logs removed - navigation should now show username correctly
+  
   const handleLogout = () => {
     logout();
   }

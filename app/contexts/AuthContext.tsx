@@ -8,6 +8,11 @@ interface UserData {
     IDUser?: string;
     UserName?: string;
     RoleUsers?: string[] | string;
+    maNguoiDung?: string;
+    taiKhoan?: string;
+    email?: string;
+    ten?: string;
+    phuongThucDangNhap?: string;
 }
 
 interface AuthContextType {
@@ -63,8 +68,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 setIsAuthenticated(authenticated);
                 
                 if (authenticated) {
-                    const userData = await authController.fetchUserData();
-                    setUserData(userData);
+                    const fetchedUserData = await authController.fetchUserData();
+                    if (fetchedUserData) {
+                        // Map the data from AuthController to our UserData interface
+                        setUserData({
+                            IDUser: fetchedUserData.maNguoiDung,
+                            UserName: fetchedUserData.ten || fetchedUserData.taiKhoan, // Use 'ten' as UserName, fallback to 'taiKhoan'
+                            RoleUsers: fetchedUserData.RoleUsers,
+                            maNguoiDung: fetchedUserData.maNguoiDung,
+                            taiKhoan: fetchedUserData.taiKhoan,
+                            email: fetchedUserData.email,
+                            ten: fetchedUserData.ten,
+                            phuongThucDangNhap: fetchedUserData.phuongThucDangNhap
+                        });
+                    }
                 }
             } catch (error) {
                 console.error('Authentication check error:', error);
@@ -87,13 +104,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             
             if (result.success) {
                 setIsAuthenticated(true);
-                setUserData(authController.userData);
+                
+                // Map the data from AuthController to our UserData interface
+                const authUserData = authController.userData;
+                if (authUserData) {
+                    setUserData({
+                        IDUser: authUserData.maNguoiDung,
+                        UserName: authUserData.ten || authUserData.taiKhoan, // Use 'ten' as UserName, fallback to 'taiKhoan'
+                        RoleUsers: authUserData.RoleUsers,
+                        maNguoiDung: authUserData.maNguoiDung,
+                        taiKhoan: authUserData.taiKhoan,
+                        email: authUserData.email,
+                        ten: authUserData.ten,
+                        phuongThucDangNhap: authUserData.phuongThucDangNhap
+                    });
+                }
                 
                 // Debug user roles
-                console.log("Login successful, user data:", authController.userData);
+                console.log("Login successful, user data:", authUserData);
                 console.log("Has Admin role:", authController.hasRole('Admin'));
-                if (authController.userData?.RoleUsers) {
-                    console.log("User roles:", authController.userData.RoleUsers);
+                if (authUserData?.RoleUsers) {
+                    console.log("User roles:", authUserData.RoleUsers);
                 } else {
                     console.log("No roles found in user data");
                 }
