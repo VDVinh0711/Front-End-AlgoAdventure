@@ -68,7 +68,7 @@ export default function AdminPage() {
               <CardHeader className="bg-rose-500 text-white">
                 <CardTitle className="flex items-center gap-2">
                   <Palette className="h-5 w-5" />
-                  Skins
+                  Trang Phục
                 </CardTitle>
                 <CardDescription className="text-rose-100">Quản lý bộ sưu tập trong trò chơi</CardDescription>
               </CardHeader>
@@ -87,7 +87,7 @@ export default function AdminPage() {
               <CardHeader className="bg-rose-500 text-white">
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
-                  Players
+                  Người Chơi
                 </CardTitle>
                 <CardDescription className="text-rose-100">Quản lý người chơi</CardDescription>
               </CardHeader>
@@ -109,7 +109,7 @@ export default function AdminPage() {
                 <CardHeader className="bg-rose-500 text-white">
                   <CardTitle className="flex items-center gap-2">
                     <Users className="h-5 w-5" />
-                    Employee
+                    Nhân Viên
                   </CardTitle>
                   <CardDescription className="text-rose-100">Quản lý nhân viên</CardDescription>
                 </CardHeader>
@@ -127,7 +127,7 @@ export default function AdminPage() {
             )}
           </div>
 
-          <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
+          {/* <div className="mt-12 bg-white rounded-2xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-rose-500 mb-4">Thống Kê Nhanh</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -148,7 +148,7 @@ export default function AdminPage() {
                 <p className="text-3xl font-bold text-rose-500">18</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </main>
     </div>
