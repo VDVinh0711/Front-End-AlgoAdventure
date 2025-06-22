@@ -238,7 +238,7 @@ export default function EmployeesPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
-                  placeholder="Search employees..."
+                  placeholder="Tìm kiếm nhân viên..."
                   className="pl-10 rounded-full"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -246,7 +246,7 @@ export default function EmployeesPage() {
               </div>
               <Button variant="outline" className="rounded-full">
                 <Filter className="h-4 w-4 mr-2" />
-                Filter
+                Lọc
               </Button>
             </div>
           </div>
@@ -266,12 +266,12 @@ export default function EmployeesPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead>Name</TableHead>
+                      <TableHead>Tên Nhân Viên</TableHead>
                       <TableHead>Email</TableHead>
-                      <TableHead>Roles</TableHead>
-                      <TableHead>Created</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>Vai Trò</TableHead>
+                      <TableHead>Ngày Tạo</TableHead>
+                      <TableHead>Trạng Thái</TableHead>
+                      <TableHead className="text-right">Hành Động</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -362,16 +362,16 @@ export default function EmployeesPage() {
               {filteredEmployees.length > 0 && (
                 <div className="flex items-center justify-between px-4 py-4 border-t">
                   <div className="text-sm text-gray-500">
-                    Showing <span className="font-medium">1</span> to{" "}
-                    <span className="font-medium">{filteredEmployees.length}</span> of{" "}
-                    <span className="font-medium">{employeeList.length}</span> employees
+                    Hiển thị <span className="font-medium">1</span> đến{" "}
+                    <span className="font-medium">{filteredEmployees.length}</span> trên{" "}
+                    <span className="font-medium">{employeeList.length}</span> Nhân Viên
                   </div>
                   <div className="flex space-x-2">
                     <Button variant="outline" size="sm" className="rounded-full" disabled>
-                      Previous
+                      Trước
                     </Button>
                     <Button variant="outline" size="sm" className="rounded-full" disabled>
-                      Next
+                      Tiếp
                     </Button>
                   </div>
                 </div>

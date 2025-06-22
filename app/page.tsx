@@ -10,32 +10,32 @@ const gamesData = [
   { 
     imageSrc: "/images/games/logo_game_mergememe.jpg", 
     name: "Merge Meme", 
-    description: "Trò chơi ghép hình thú vị" 
+    description: "Trò chơi ghép meme thú vị" 
   },
   { 
-    imageSrc: "/images/games/logo_game_bubbe_around.png", 
-    name: "Bubble Around", 
+    imageSrc: "/images/games/logo/logo_bb_hawaii.jpg", 
+    name: "Bubble Hawaii", 
     description: "Game bắn bóng hấp dẫn" 
   },
   { 
-    imageSrc: "/images/games/logo_game_mergememe.jpg", 
-    name: "Adventure Quest", 
-    description: "Phiêu lưu đầy thử thách" 
+    imageSrc: "/images/games/logo/logo_bb_pool.jpg", 
+    name: "Bubble Shooter Pool", 
+    description: "Game bắn bóng hấp dẫn" 
   },
   { 
-    imageSrc: "/images/games/logo_game_bubbe_around.png", 
-    name: "Racing Pro", 
-    description: "Đua xe tốc độ cao" 
+    imageSrc: "/images/games/logo/logo_bb_ultimate.jpg", 
+    name: "Bubble Ultimate", 
+    description: "Game bắn bóng hấp dẫn" 
   },
   { 
-    imageSrc: "/images/games/logo_game_mergememe.jpg", 
-    name: "Puzzle Master", 
-    description: "Thử thách trí tuệ" 
+    imageSrc: "/images/games/logo/logo_doge.jpg", 
+    name: "Bubble Doge", 
+    description: "Game bắn bóng hấp dẫn" 
   },
   { 
-    imageSrc: "/images/games/logo_game_bubbe_around.png", 
-    name: "Card Battle", 
-    description: "Chiến đấu thẻ bài" 
+    imageSrc: "/images/games/logo/logo_piggies.jpg", 
+    name: "Bubble Piggies", 
+    description: "Game bắn bóng hấp dẫn" 
   }
 ]
 
@@ -59,11 +59,7 @@ export default function Home() {
             THE KNOWN
           </div>
 
-          <p className="text-gray-800 text-lg md:text-xl mb-10">sản phẩm tuyệt vời được tạo ra bởi những đội ngũ tuyệt vời</p>
-
-          <Button className="bg-rose-500 hover:bg-rose-600 text-white rounded-full px-8 py-6 text-lg font-medium">
-            Tất Cả Trò Chơi
-          </Button>
+          <p className="text-gray-800 text-lg md:text-xl mb-10">Sản phẩm tuyệt vời được tạo ra bởi những đội ngũ tuyệt vời</p>
         </div>
 
         {/* Game Icons */}

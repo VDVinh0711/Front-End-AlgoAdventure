@@ -54,16 +54,6 @@ export default function Navigation() {
             Giới Thiệu
           </Button>
         </Link>
-        <Link href="/services">
-          <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-            Dịch Vụ
-          </Button>
-        </Link>
-        <Link href="/contact">
-          <Button variant="ghost" className="text-gray-700 hover:text-rose-500 rounded-full">
-            Liên Hệ
-          </Button>
-        </Link>
         
         {isAuthenticated ? (
           <DropdownMenu>
@@ -80,9 +70,6 @@ export default function Navigation() {
                   <Link href="/admin">Trang Quản Trị</Link>
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem asChild>
-                <Link href="/profile">Tài Khoản Của Tôi</Link>
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout} className="text-red-500">
                 <LogOut className="h-4 w-4 mr-2" />
                 Đăng Xuất
@@ -115,20 +102,11 @@ export default function Navigation() {
               <DropdownMenuItem asChild>
                 <Link href="/about">Giới Thiệu</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/services">Dịch Vụ</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/contact">Liên Hệ</Link>
-              </DropdownMenuItem>
               {canAccessAdmin && (
                 <DropdownMenuItem asChild>
                   <Link href="/admin">Trang Quản Trị</Link>
                 </DropdownMenuItem>
               )}
-              <DropdownMenuItem asChild>
-                <Link href="/profile">Tài Khoản Của Tôi</Link>
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout} className="text-red-500">
                 <LogOut className="h-4 w-4 mr-2" />
                 Đăng Xuất

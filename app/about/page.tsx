@@ -1,23 +1,25 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import Navigation from "@/components/ui/navigation"
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-rose-50 py-16">
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-rose-500 mb-8 text-center">About Gametamin</h1>
+    <div className="min-h-screen bg-rose-50">
+      <Navigation />
+      <div className="container mx-auto px-4 py-16">
+        <h1 className="text-4xl font-bold text-rose-500 mb-8 text-center">Giới Thiệu Về PurusGames</h1>
 
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-            <h2 className="text-2xl font-bold text-rose-500 mb-4">Our Story</h2>
+            <h2 className="text-2xl font-bold text-rose-500 mb-4">Lịch Sử</h2>
 
             <div className="flex flex-col md:flex-row gap-6 mb-6">
               <div className="md:w-1/3">
                 <div className="rounded-xl overflow-hidden">
-                  <Image
-                    src="/placeholder.svg?height=300&width=300&text=Gametamin+Team"
-                    alt="Gametamin Team"
+                                      <Image
+                      src="/images/imageTeams.jpg"
+                      alt="PurusGames Team"
                     width={300}
                     height={300}
                     className="w-full h-auto"
@@ -26,87 +28,81 @@ export default function AboutPage() {
               </div>
               <div className="md:w-2/3">
                 <p className="text-lg mb-4">
-                  Founded in 2015, Gametamin began with a small team of passionate game developers who shared a vision:
-                  to create mobile games that bring joy to players worldwide while maintaining the highest standards of
-                  quality and innovation.
+                PurusGames là một công ty phát triển game được thành lập cách đây 4 năm, khởi nguồn từ một nhóm nhỏ gồm 10 thành viên trẻ tuổi,
+                 nhiệt huyết và đầy đam mê với ngành công nghiệp trò chơi điện tử. Từ những bước đi đầu tiên còn nhiều khó khăn,
+                  công ty đã không ngừng nỗ lực và từng bước khẳng định vị thế của mình thông qua các dự án game sáng tạo, phù hợp với xu hướng thị trường.
                 </p>
                 <p className="text-lg mb-4">
-                  What started as a small indie studio has grown into a dynamic team of over 50 talented individuals,
-                  each bringing unique skills and perspectives to our creative process. Our headquarters in Singapore
-                  serves as the hub for our global operations, allowing us to reach players across continents.
+                Đến năm 2020, PurusGames chính thức sáp nhập với công ty ABI – một đơn vị công nghệ có tiềm lực mạnh mẽ – và trở thành một 
+                phòng ban chuyên phát triển game trong hệ thống của ABI. Giai đoạn này đánh dấu bước phát triển quan trọng, giúp đội ngũ
+                 có cơ hội tiếp cận với quy trình làm việc chuyên nghiệp hơn, đồng thời mở rộng quy mô các dự án và nâng cao chất lượng sản phẩm.
                 </p>
               </div>
             </div>
 
-            <h2 className="text-2xl font-bold text-rose-500 mb-4">Our Mission</h2>
+            <h2 className="text-2xl font-bold text-rose-500 mb-4">Sứ Mệnh</h2>
             <p className="text-lg mb-6">
-              At Gametamin, our mission is encapsulated in our slogan: "Achieve Together." We believe that the best
-              games are created when talented individuals collaborate, share ideas, and work toward a common goal. This
-              philosophy extends beyond our internal teams to include our relationship with our players, whose feedback
-              and support drive our continuous improvement.
+            Sứ mệnh của chúng tôi là phát triển những tựa game hay, thú vị và sáng tạo,
+             góp phần thúc đẩy sự phát triển của ngành công nghiệp game trong nước cũng như 
+             tạo ra những giá trị tích cực cho cộng đồng người chơi. Chúng tôi mong muốn mang đến
+              những trải nghiệm giải trí chất lượng, truyền cảm hứng học hỏi, sáng tạo và kết nối mọi người 
+              thông qua từng sản phẩm mà chúng tôi xây dựng.
             </p>
 
-            <h2 className="text-2xl font-bold text-rose-500 mb-4">Our Approach</h2>
+            <h2 className="text-2xl font-bold text-rose-500 mb-4">Phương Pháp Làm Việc</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div className="bg-rose-50 p-6 rounded-xl">
-                <h3 className="text-xl font-bold text-rose-600 mb-2">Player-Centric Design</h3>
+                <h3 className="text-xl font-bold text-rose-600 mb-2">Tập Trung Vào Người Chơi</h3>
                 <p>
-                  We put players at the center of everything we do, creating games that are intuitive, engaging, and
-                  accessible to everyone.
+                  Chúng tôi luôn đặt người chơi làm trung tâm trong mọi công việc, tạo ra những trò chơi dễ hiểu, 
+                  hấp dẫn và dễ tiếp cận với mọi đối tượng.
                 </p>
               </div>
               <div className="bg-rose-50 p-6 rounded-xl">
-                <h3 className="text-xl font-bold text-rose-600 mb-2">Innovation</h3>
+                <h3 className="text-xl font-bold text-rose-600 mb-2">Sáng Tạo</h3>
                 <p>
-                  We constantly explore new technologies and gameplay mechanics to deliver fresh experiences that stand
-                  out in the crowded mobile market.
+                  Chúng tôi không ngừng khám phá các công nghệ mới và cơ chế gameplay để mang đến những trải nghiệm 
+                  tươi mới, nổi bật trong thị trường game di động đầy cạnh tranh.
                 </p>
               </div>
               <div className="bg-rose-50 p-6 rounded-xl">
-                <h3 className="text-xl font-bold text-rose-600 mb-2">Quality</h3>
+                <h3 className="text-xl font-bold text-rose-600 mb-2">Chất Lượng</h3>
                 <p>
-                  We never compromise on quality, ensuring that every game we release meets our high standards for
-                  performance, design, and fun.
+                  Chúng tôi không bao giờ thỏa hiệp về chất lượng, đảm bảo rằng mọi trò chơi phát hành đều đạt tiêu chuẩn 
+                  cao về hiệu năng, thiết kế và tính giải trí.
                 </p>
               </div>
             </div>
 
-            <h2 className="text-2xl font-bold text-rose-500 mb-4">Our Achievements</h2>
+            <h2 className="text-2xl font-bold text-rose-500 mb-4">Thành Tựu</h2>
             <p className="text-lg mb-4">
-              Since our founding, Gametamin has released over 20 successful mobile games across various genres,
-              accumulating more than 50 million downloads worldwide. Our titles have been featured on both the App Store
-              and Google Play, and we've received multiple industry awards for innovation and excellence in mobile
-              gaming.
+              Kể từ khi thành lập, PurusGames đã phát hành hơn 15 tựa game di động thành công trên nhiều thể loại khác nhau,
+              tích lũy được hơn 10 triệu lượt tải xuống trên toàn thế giới. Các sản phẩm của chúng tôi đã được giới thiệu 
+              trên cả App Store và Google Play, và chúng tôi đã nhận được nhiều giải thưởng trong ngành về sự sáng tạo 
+              và xuất sắc trong lĩnh vực game di động.
             </p>
             <p className="text-lg mb-6">
-              We're particularly proud of our community engagement, with an active player base that provides valuable
-              feedback and has helped shape our games into what they are today.
+              Chúng tôi đặc biệt tự hào về sự tương tác với cộng đồng, với cơ sở người chơi tích cực luôn đóng góp 
+              ý kiến quý báu và giúp định hình các trò chơi thành như ngày hôm nay.
             </p>
           </div>
 
           <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-rose-500 mb-4">Join Our Journey</h2>
+            <h2 className="text-2xl font-bold text-rose-500 mb-4">Tham Gia Hành Trình Của Chúng Tôi</h2>
             <p className="text-lg mb-6">
-              Whether you're a player enjoying our games, a potential team member looking to contribute your talents, or
-              a business partner interested in collaboration, we invite you to be part of the Gametamin story. Together,
-              we can continue to create memorable gaming experiences that bring joy to millions around the world.
+              Dù bạn là người chơi đang thưởng thức các trò chơi của chúng tôi, một thành viên tiềm năng muốn đóng góp 
+              tài năng của mình, hay một đối tác kinh doanh quan tâm đến việc hợp tác, chúng tôi mời bạn trở thành 
+              một phần trong câu chuyện của PurusGames. Cùng nhau, chúng ta có thể tiếp tục tạo ra những trải nghiệm 
+              game đáng nhớ mang lại niềm vui cho hàng triệu người trên thế giới.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/games">
-                <Button className="bg-rose-500 hover:bg-rose-600 text-white rounded-full px-6">
-                  Explore Our Games
-                </Button>
-              </Link>
-              <Link href="/contact">
-                <Button className="bg-rose-500 hover:bg-rose-600 text-white rounded-full px-6">Contact Us</Button>
-              </Link>
-              <Link href="/">
-                <Button variant="outline" className="text-rose-500 border-rose-500 hover:bg-rose-50 rounded-full px-6">
-                  Back to Home
-                </Button>
-              </Link>
-            </div>
+                          <div className="flex flex-wrap justify-center gap-4">
+                <Link href="/">
+                  <Button variant="outline" className="text-rose-500 border-rose-500 hover:bg-rose-50 rounded-full px-6">
+                    Về Trang Chủ
+                  </Button>
+                </Link>
+              </div>
           </div>
         </div>
       </div>

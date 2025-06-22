@@ -513,9 +513,9 @@ export default function PlayersPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between px-4 py-4 border-t">
               <div className="text-sm text-gray-500">
-                Showing <span className="font-medium">1</span> to{" "}
-                <span className="font-medium">{filteredPlayers.length}</span> of{" "}
-                <span className="font-medium">{filteredPlayers.length}</span> players
+                Hiển thị <span className="font-medium">1</span> đến{" "}
+                <span className="font-medium">{filteredPlayers.length}</span> trên{" "}
+                <span className="font-medium">{filteredPlayers.length}</span> người chơi
               </div>
               <div className="flex space-x-2">
                 <Button variant="outline" size="sm" className="rounded-full" disabled>
@@ -526,13 +526,6 @@ export default function PlayersPage() {
                 </Button>
               </div>
             </div>
-          </div>
-
-          {/* Management Button - Added to match the image */}
-          <div className="mt-6 flex justify-center">
-            <Button className="bg-rose-500 hover:bg-rose-600 text-white px-6 py-2 rounded-full">
-              Quản Lý Người Chơi
-            </Button>
           </div>
         </div>
       </main>

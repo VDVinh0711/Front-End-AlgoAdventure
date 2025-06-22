@@ -253,7 +253,7 @@ export default function PlayerDashboardPage() {
             <div className="mt-4 md:mt-0">
               <Link href="/admin/players">
                 <Button variant="outline" className="border-rose-500 text-rose-500 hover:bg-rose-50 rounded-full">
-                  Manage Players
+                  Quản lý người chơi
                 </Button>
               </Link>
             </div>
@@ -263,7 +263,7 @@ export default function PlayerDashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Total Players</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500">Tổng số người chơi</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">{playerData.length}</div>
@@ -271,7 +271,7 @@ export default function PlayerDashboardPage() {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Avg. Level</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500">Cấp độ trung bình</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">
@@ -281,7 +281,7 @@ export default function PlayerDashboardPage() {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Avg. Score</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500">Điểm trung bình</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">
@@ -297,7 +297,7 @@ export default function PlayerDashboardPage() {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div>
                   <CardTitle>{getChartTitle()}</CardTitle>
-                  <CardDescription>Visualize player distribution</CardDescription>
+                  <CardDescription>Hiển thị phân bố người chơi</CardDescription>
                 </div>
                 <div className="flex items-center space-x-2 mt-4 md:mt-0">
                   <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
@@ -343,13 +343,13 @@ export default function PlayerDashboardPage() {
               <Tabs defaultValue="score" onValueChange={(value) => setChartType(value as any)}>
                 <TabsList className="grid w-full grid-cols-3 mb-6">
                   <TabsTrigger value="score" className="rounded-full">
-                    By Score
+                    Theo điểm
                   </TabsTrigger>
                   <TabsTrigger value="level" className="rounded-full">
-                    By Level
+                    Theo cấp độ
                   </TabsTrigger>
                   <TabsTrigger value="money" className="rounded-full">
-                    By Money
+                    Theo tiền
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="score">{renderChart()}</TabsContent>
@@ -362,8 +362,8 @@ export default function PlayerDashboardPage() {
           {/* Players Table */}
           <Card>
             <CardHeader>
-              <CardTitle>Player Data</CardTitle>
-              <CardDescription>Detailed information about all players</CardDescription>
+              <CardTitle>Dữ liệu người chơi</CardTitle>
+              <CardDescription>Thông tin chi tiết về tất cả người chơi</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
