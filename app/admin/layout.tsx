@@ -9,7 +9,7 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <ProtectedRoute requiredRoles={['Admin']}>
+    <ProtectedRoute requiredRoles={['Admin', 'Employee']}>
       {children}
     </ProtectedRoute>
   );

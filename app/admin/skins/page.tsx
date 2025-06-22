@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Plus, Search, Filter, Pencil } from "lucide-react"
+import { ArrowLeft, Plus, Search, Filter, Pencil, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -25,6 +25,8 @@ export default function SkinsPage() {
   const [data, setData] = useState<SkinData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const apiController = new ApiController();
 
   useEffect(() => {
@@ -70,6 +72,25 @@ export default function SkinsPage() {
     const codeMatch = skin.maTrangPhuc?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
     return nameMatch || codeMatch;
   });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredSkins.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedSkins = filteredSkins.slice(startIndex, endIndex);
+
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  const handlePreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  };
 
   // Show loading state
   if (isLoading) {
@@ -152,10 +173,10 @@ export default function SkinsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredSkins.length > 0 ? (
-                    filteredSkins.map((skin, index) => (
+                  {paginatedSkins.length > 0 ? (
+                    paginatedSkins.map((skin, index) => (
                       <TableRow key={skin.maTrangPhuc} className="hover:bg-gray-50">
-                        <TableCell className="font-medium">{index + 1}</TableCell>
+                        <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
                         <TableCell className="font-medium">{skin.maTrangPhuc || "N/A"}</TableCell>
                         <TableCell>{skin.tenTrangPhuc || "N/A"}</TableCell>
                         <TableCell>{skin.moTa || "Không có mô tả"}</TableCell>
@@ -187,15 +208,33 @@ export default function SkinsPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between px-4 py-4 border-t">
               <div className="text-sm text-gray-500">
-                Hiển thị <span className="font-medium">1</span> đến <span className="font-medium">{filteredSkins.length}</span> của{" "}
-                <span className="font-medium">{data.length}</span> trang phục
+                Hiển thị <span className="font-medium">{startIndex + 1}</span> đến{" "}
+                <span className="font-medium">{Math.min(endIndex, filteredSkins.length)}</span> của{" "}
+                <span className="font-medium">{filteredSkins.length}</span> trang phục
+                {totalPages > 1 && (
+                  <span> - Trang {currentPage} của {totalPages}</span>
+                )}
               </div>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="rounded-full" disabled>
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="rounded-full" 
+                  disabled={currentPage === 1}
+                  onClick={handlePreviousPage}
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
                   Trước
                 </Button>
-                <Button variant="outline" size="sm" className="rounded-full" disabled>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="rounded-full" 
+                  disabled={currentPage === totalPages || totalPages === 0}
+                  onClick={handleNextPage}
+                >
                   Sau
+                  <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
             </div>

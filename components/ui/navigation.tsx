@@ -25,6 +25,8 @@ export default function Navigation() {
   }
 
   const isAdmin = hasRole('Admin');
+  const isEmployee = hasRole('Employee');
+  const canAccessAdmin = isAdmin || isEmployee;
 
   return (
     <header className="container mx-auto py-4 px-4 flex items-center justify-between">
@@ -73,7 +75,7 @@ export default function Navigation() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {isAdmin && (
+              {canAccessAdmin && (
                 <DropdownMenuItem asChild>
                   <Link href="/admin">Trang Quản Trị</Link>
                 </DropdownMenuItem>
@@ -119,7 +121,7 @@ export default function Navigation() {
               <DropdownMenuItem asChild>
                 <Link href="/contact">Liên Hệ</Link>
               </DropdownMenuItem>
-              {isAdmin && (
+              {canAccessAdmin && (
                 <DropdownMenuItem asChild>
                   <Link href="/admin">Trang Quản Trị</Link>
                 </DropdownMenuItem>

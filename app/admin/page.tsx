@@ -28,7 +28,7 @@ export default function AdminPage() {
               <CardHeader className="bg-rose-500 text-white">
                 <CardTitle className="flex items-center gap-2">
                   <Layers className="h-5 w-5" />
-                  Levels
+                  Cấp Độ
                 </CardTitle>
                 <CardDescription className="text-rose-100">Quản lý cấp độ trong trò chơi</CardDescription>
               </CardHeader>

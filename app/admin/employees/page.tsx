@@ -207,22 +207,29 @@ export default function EmployeesPage() {
           <div className="flex items-center mb-6">
             <Link href="/admin" className="flex items-center text-rose-500 hover:text-rose-600">
               <ArrowLeft className="h-4 w-4 mr-1" />
-              Back to Dashboard
+              Trở về trang quản lý
             </Link>
           </div>
 
           {/* Page Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-rose-500">Manage Employees</h1>
-              <p className="text-gray-600 mt-1">View and manage employee accounts</p>
+              <h1 className="text-3xl font-bold text-rose-500">Quản lý nhân viên</h1>
+              <p className="text-gray-600 mt-1">Xem và quản lý tài khoản nhân viên</p>
               {error && (
                 <div className="mt-2 text-sm text-red-500 bg-red-50 p-2 rounded-md">
                   {error}
                 </div>
               )}
             </div>
-            
+            <div className="mt-4 md:mt-0">
+              <Link href="/admin/employees/create">
+                <Button className="bg-rose-500 hover:bg-rose-600 text-white rounded-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Thêm Nhân Viên
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Search and Filter */}
