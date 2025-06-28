@@ -108,7 +108,6 @@ export default function EditLevelPage() {
 
         setOriginalLevel(level);
         
-        // Parse the level data JSON
         const parsedLevelData = JSON.parse(level.duLieuCapDo) as LevelData;
         setLevelData(parsedLevelData);
         
@@ -124,14 +123,13 @@ export default function EditLevelPage() {
     fetchLevel();
   }, [levelId, isValidId]);
 
-  // Initialize the grid with empty blocks if no level data is loaded
   useEffect(() => {
     if (levelData.ListDataMap.length === 0) {
       const initialBlocks: BlockData[] = [];
       for (let y = 0; y < 6; y++) {
         for (let x = 0; x < 6; x++) {
           initialBlocks.push({
-            BlockType: 0, // Empty (now pink)
+            BlockType: 0,
             IsHasCoin: false,
             PointMap: { x, y },
           });
@@ -153,17 +151,19 @@ export default function EditLevelPage() {
     }));
   }, [levelData.ListDataMap]);
 
-  // Handle block click
+
   const handleBlockClick = (x: number, y: number) => {
     setLevelData((prev) => {
       const newBlocks = [...prev.ListDataMap];
       const blockIndex = newBlocks.findIndex((block) => block.PointMap.x === x && block.PointMap.y === y);
 
       if (blockIndex !== -1) {
+        const canHaveCoin = !(selectedBlockType === 1 || selectedBlockType === 2 || selectedBlockType === 3);
+        
         newBlocks[blockIndex] = {
           ...newBlocks[blockIndex],
           BlockType: selectedBlockType,
-          IsHasCoin: hasCoin,
+          IsHasCoin: canHaveCoin ? hasCoin : false,
         };
       }
 
@@ -176,18 +176,14 @@ export default function EditLevelPage() {
 
   // Handle mouse down on a block
   const handleMouseDown = (x: number, y: number, isPlayerPosition: boolean) => {
-    // Always allow drawing regardless of player position
     setIsDrawing(true);
     handleBlockClick(x, y);
-
-    // Only set dragging player if we're specifically clicking on the player icon
-    // and not trying to modify the block
     if (isPlayerPosition && !isDrawing) {
       setIsDraggingPlayer(true);
     }
   };
 
-  // Handle mouse enter on a block while drawing
+
   const handleMouseEnter = (x: number, y: number) => {
     if (isDrawing) {
       handleBlockClick(x, y);
@@ -196,7 +192,6 @@ export default function EditLevelPage() {
     }
   };
 
-  // Handle mouse up to stop drawing
   const handleMouseUp = () => {
     setIsDrawing(false);
     setIsDraggingPlayer(false);
@@ -237,10 +232,10 @@ export default function EditLevelPage() {
   };
 
   const handleClearGrid = () => {
-    if (confirm("Are you sure you want to clear the grid? This action cannot be undone.")) {
+    if (confirm("Bạn có chắc là bạn muốn xóa map không? Hành động này không thể được hoàn tác.")) {
       const clearedBlocks = levelData.ListDataMap.map((block) => ({
         ...block,
-        BlockType: 1, // Empty (now pink)
+        BlockType: 1, 
         IsHasCoin: false,
       }));
 
@@ -251,7 +246,6 @@ export default function EditLevelPage() {
     }
   };
 
-  // Save the level
   const handleSaveLevel = async () => {
     if (!originalLevel) {
       setError("Cannot update level: original level data not found");
@@ -270,8 +264,8 @@ export default function EditLevelPage() {
       
       
         toast({
-          title: "✅ Success!",
-          description: `Level "${levelId}" has been updated successfully.`,
+          title: "✅ Thành Công!",
+          description: `Cấp độ "${levelId}" đã được cập nhật thành công.`,
           variant: "default",
           className: "bg-green-100 border-green-500 border",
         });
@@ -282,11 +276,11 @@ export default function EditLevelPage() {
       
     } catch (error) {
       console.error("Error updating level:", error);
-      setError(error instanceof Error ? error.message : "An error occurred when updating the level");
+      setError(error instanceof Error ? error.message : "Đã xảy ra lỗi khi cập nhật cấp độ");
       
       toast({
-        title: "❌ Update Failed",
-        description: "Could not update level. Please check your connection and try again.",
+        title: "❌ Cập Nhật Thất Bại",
+        description: "Không thể cập nhật cấp độ. Vui lòng kiểm tra kết nối và thử lại.",
         variant: "destructive",
         className: "bg-red-100 border-red-500 border text-black",
         duration: 5000,
@@ -342,7 +336,7 @@ export default function EditLevelPage() {
               </CardHeader>
               <CardContent>
                 <div className="p-4 bg-rose-50 text-rose-800 rounded-md">
-                  <p>Invalid level ID. Please select a valid level from the levels page.</p>
+                  <p>ID cấp độ không hợp lệ. Vui lòng chọn một cấp độ hợp lệ từ trang cấp độ.</p>
                 </div>
               </CardContent>
               <CardFooter>
@@ -350,7 +344,7 @@ export default function EditLevelPage() {
                   onClick={() => router.push('/admin/levels')}
                   className="bg-rose-500 hover:bg-rose-600"
                 >
-                  Return to Levels
+                  Quay lại Trang Quản Lý Cấp Độ
                 </Button>
               </CardFooter>
             </Card>
@@ -406,7 +400,12 @@ export default function EditLevelPage() {
                               className={`w-full justify-start ${
                                 selectedBlockType === blockType.id ? "bg-rose-500 text-white" : ""
                               }`}
-                              onClick={() => setSelectedBlockType(blockType.id)}
+                              onClick={() => {
+                                setSelectedBlockType(blockType.id);
+                                if (blockType.id === 1 || blockType.id === 2 || blockType.id === 3) {
+                                  setHasCoin(false);
+                                }
+                              }}
                             >
                               <div
                                 className={`w-6 h-6 mr-2 ${blockType.color} rounded flex items-center justify-center`}
@@ -432,13 +431,30 @@ export default function EditLevelPage() {
                           id="hasCoin"
                           checked={hasCoin}
                           onChange={(e) => setHasCoin(e.target.checked)}
-                          className="mr-2 h-4 w-4 rounded border-gray-300 text-rose-500 focus:ring-rose-500"
+                          disabled={selectedBlockType === 1 || selectedBlockType === 2 || selectedBlockType === 3}
+                          className={`mr-2 h-4 w-4 rounded border-gray-300 text-rose-500 focus:ring-rose-500 ${
+                            selectedBlockType === 1 || selectedBlockType === 2 || selectedBlockType === 3 
+                              ? 'opacity-50 cursor-not-allowed' 
+                              : ''
+                          }`}
                         />
-                        <Label htmlFor="hasCoin" className="flex items-center cursor-pointer">
+                        <Label 
+                          htmlFor="hasCoin" 
+                          className={`flex items-center ${
+                            selectedBlockType === 1 || selectedBlockType === 2 || selectedBlockType === 3 
+                              ? 'cursor-not-allowed opacity-50' 
+                              : 'cursor-pointer'
+                          }`}
+                        >
                           <Coin className="h-4 w-4 mr-2 text-yellow-500" />
                           Tiền
                         </Label>
                       </div>
+                      {(selectedBlockType === 1 || selectedBlockType === 2 || selectedBlockType === 3) && (
+                        <p className="text-xs text-gray-500 ml-6">
+                          Block này không thể có coin
+                        </p>
+                      )}
                     </div>
 
                     <Separator className="my-4" />

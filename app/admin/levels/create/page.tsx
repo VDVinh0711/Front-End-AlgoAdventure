@@ -92,11 +92,13 @@ export default function CreateLevelPage() {
       const newBlocks = [...prev.ListDataMap]
       const blockIndex = newBlocks.findIndex((block) => block.PointMap.x === x && block.PointMap.y === y)
 
-      if (blockIndex !== -1) {
-        newBlocks[blockIndex] = {
+              if (blockIndex !== -1) {
+          const canHaveCoin = !(selectedBlockType === 1 || selectedBlockType === 2 || selectedBlockType === 3);
+          
+          newBlocks[blockIndex] = {
           ...newBlocks[blockIndex],
           BlockType: selectedBlockType,
-          IsHasCoin: hasCoin,
+          IsHasCoin: canHaveCoin ? hasCoin : false,
         }
       }
 
@@ -265,7 +267,15 @@ export default function CreateLevelPage() {
                               className={`w-full justify-start ${
                                 selectedBlockType === blockType.id ? "bg-rose-500 text-white" : ""
                               }`}
-                              onClick={() => setSelectedBlockType(blockType.id)}
+                              onClick={() =>
+                                {
+                                  setSelectedBlockType(blockType.id);
+                                  if (blockType.id === 1 || blockType.id === 2 || blockType.id === 3) {
+                                    setHasCoin(false);
+                                  }
+                                }}
+                      
+                                
                             >
                               <div
                                 className={`w-6 h-6 mr-2 ${blockType.color} rounded flex items-center justify-center`}
@@ -291,13 +301,30 @@ export default function CreateLevelPage() {
                           id="hasCoin"
                           checked={hasCoin}
                           onChange={(e) => setHasCoin(e.target.checked)}
-                          className="mr-2 h-4 w-4 rounded border-gray-300 text-rose-500 focus:ring-rose-500"
+                          disabled={selectedBlockType === 1 || selectedBlockType === 2 || selectedBlockType === 3}
+                          className={`mr-2 h-4 w-4 rounded border-gray-300 text-rose-500 focus:ring-rose-500 ${
+                            selectedBlockType === 1 || selectedBlockType === 2 || selectedBlockType === 3 
+                              ? 'opacity-50 cursor-not-allowed' 
+                              : ''
+                          }`}
                         />
-                        <Label htmlFor="hasCoin" className="flex items-center cursor-pointer">
+                        <Label 
+                          htmlFor="hasCoin" 
+                          className={`flex items-center ${
+                            selectedBlockType === 1 || selectedBlockType === 2 || selectedBlockType === 3 
+                              ? 'cursor-not-allowed opacity-50' 
+                              : 'cursor-pointer'
+                          }`}
+                        >
                           <Coin className="h-4 w-4 mr-2 text-yellow-500" />
                           Tiền
                         </Label>
                       </div>
+                      {(selectedBlockType === 1 || selectedBlockType === 2 || selectedBlockType === 3) && (
+                        <p className="text-xs text-gray-500 ml-6">
+                          Block này không thể có coin
+                        </p>
+                      )}
                     </div>
 
                     <Separator className="my-4" />
