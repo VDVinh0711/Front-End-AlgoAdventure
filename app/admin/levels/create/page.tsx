@@ -244,8 +244,8 @@ export default function CreateLevelPage() {
 
           {/* Page Header */}
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-rose-500">Tạo Cấp Độ Mới</h1>
-            <p className="text-gray-600 mt-1">Thiết kế một cấp độ mới cho trò chơi của bạn</p>
+            <h1 className="text-3xl font-bold text-rose-500">Tạo Màn Chơi Mới</h1>
+            <p className="text-gray-600 mt-1">Thiết kế một màn chơi mới cho trò chơi của bạn</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -418,7 +418,7 @@ export default function CreateLevelPage() {
 
               <Card className="bg-white shadow-md mt-6">
                 <CardHeader>
-                  <CardTitle>Thống Kê Cấp Độ</CardTitle>
+                  <CardTitle>Thống Kê Màn Chơi</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="space-y-2">
@@ -450,7 +450,7 @@ export default function CreateLevelPage() {
             <div className="lg:col-span-9">
               <Card className="bg-white shadow-md">
                 <CardHeader>
-                  <CardTitle>Grid Cấp Độ</CardTitle>
+                  <CardTitle>Grid Màn Chơi</CardTitle>
                   <CardDescription>Nhấp và kéo để vẽ khối</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">

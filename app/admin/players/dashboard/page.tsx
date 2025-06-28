@@ -70,18 +70,18 @@ export default function PlayerDashboardPage() {
           fill: getColorForIndex(scoreRanges.indexOf(range)),
         }
       })
-    } else if (chartType === "level") {
-      // Group players by level ranges
+          } else if (chartType === "level") {
+      // Group players by current stage ranges (using capDo as mock data for current stage)
       const levelRanges = [
-        { min: 0, max: 0, label: "Level 0" },
-        { min: 1, max: 5, label: "Level 1-5" },
-        { min: 6, max: 15, label: "Level 6-15" },
-        { min: 16, max: 25, label: "Level 16-25" },
-        { min: 26, max: 35, label: "Level 26-35" },
+        { min: 0, max: 0, label: "Màn 0" },
+        { min: 1, max: 5, label: "Màn 1-5" },
+        { min: 6, max: 15, label: "Màn 6-15" },
+        { min: 16, max: 25, label: "Màn 16-25" },
+        { min: 26, max: 35, label: "Màn 26-35" },
       ]
 
       data = levelRanges.map((range) => {
-        const count = playerData.filter((player) => player.capDo >= range.min && player.capDo <= range.max).length
+        const count = playerData.filter((player) => (player.capDo + 1) >= range.min && (player.capDo + 1) <= range.max).length
         return {
           name: range.label,
           value: count,
@@ -271,11 +271,11 @@ export default function PlayerDashboardPage() {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Cấp độ trung bình</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500">Cấp độ người chơi trung bình</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">
-                  {Math.round(playerData.reduce((acc, player) => acc + player.capDo, 0) / playerData.length)}
+                  {Math.round(playerData.reduce((acc, player) => acc + (player.capDo + 1), 0) / playerData.length)}
                 </div>
               </CardContent>
             </Card>
@@ -346,7 +346,7 @@ export default function PlayerDashboardPage() {
                     Theo điểm
                   </TabsTrigger>
                   <TabsTrigger value="level" className="rounded-full">
-                    Theo cấp độ
+                    Theo màn chơi hiện tại
                   </TabsTrigger>
                   <TabsTrigger value="money" className="rounded-full">
                     Theo tiền
@@ -374,7 +374,7 @@ export default function PlayerDashboardPage() {
                       <TableHead>soTien</TableHead>
                       <TableHead>soKinhNghiem</TableHead>
                       <TableHead>soGioY</TableHead>
-                      <TableHead>capDo</TableHead>
+                      <TableHead>Cấp độ người chơi</TableHead>
                       <TableHead>diemSo</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -386,7 +386,7 @@ export default function PlayerDashboardPage() {
                         <TableCell>{player.soTien}</TableCell>
                         <TableCell>{player.soKinhNghiem}</TableCell>
                         <TableCell>{player.soGioY}</TableCell>
-                        <TableCell>{player.capDo}</TableCell>
+                        <TableCell>{player.capDo + 1}</TableCell>
                         <TableCell>{player.diemSo}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
@@ -397,7 +397,7 @@ export default function PlayerDashboardPage() {
                               onClick={() => {
                                 // In a real app, this would open a modal with detailed player data
                                 alert(
-                                  `Detailed data for player ${player.maNguoiChoi}:\n\nLevel: ${player.capDo}\nScore: ${player.diemSo}\nMoney: ${player.soTien}\nExperience: ${player.soKinhNghiem}\nHints: ${player.soGioY}`,
+                                  `Detailed data for player ${player.maNguoiChoi}:\n\nCấp độ người chơi: ${player.capDo + 1}\nScore: ${player.diemSo}\nMoney: ${player.soTien}\nExperience: ${player.soKinhNghiem}\nHints: ${player.soGioY}`,
                                 )
                               }}
                             >

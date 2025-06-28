@@ -265,7 +265,7 @@ export default function EditLevelPage() {
       
         toast({
           title: "✅ Thành Công!",
-          description: `Cấp độ "${levelId}" đã được cập nhật thành công.`,
+          description: `Màn "${levelId + 1}" đã được cập nhật thành công.`,
           variant: "default",
           className: "bg-green-100 border-green-500 border",
         });
@@ -280,7 +280,7 @@ export default function EditLevelPage() {
       
       toast({
         title: "❌ Cập Nhật Thất Bại",
-        description: "Không thể cập nhật cấp độ. Vui lòng kiểm tra kết nối và thử lại.",
+        description: "Không thể cập nhật màn chơi. Vui lòng kiểm tra kết nối và thử lại.",
         variant: "destructive",
         className: "bg-red-100 border-red-500 border text-black",
         duration: 5000,
@@ -372,8 +372,8 @@ export default function EditLevelPage() {
 
           {/* Page Header */}
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-rose-500">Chỉnh Sửa Cấp Độ {levelId}</h1>
-            <p className="text-gray-600 mt-1">Chỉnh sửa một cấp độ tồn tại cho trò chơi của bạn</p>
+                        <h1 className="text-3xl font-bold text-rose-500">Chỉnh Sửa Màn {levelId + 1}</h1>
+              <p className="text-gray-600 mt-1">Chỉnh sửa một màn chơi tồn tại cho trò chơi của bạn</p>
             {error && (
               <div className="mt-2 text-sm text-red-500 bg-red-50 p-2 rounded-md">
                 {error}
@@ -549,7 +549,7 @@ export default function EditLevelPage() {
 
               <Card className="bg-white shadow-md mt-6">
                 <CardHeader>
-                  <CardTitle>Thống Kê Cấp Độ</CardTitle>
+                  <CardTitle>Thống Kê Màn Chơi</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="space-y-2">
@@ -573,8 +573,8 @@ export default function EditLevelPage() {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Level ID:</span>
-                      <span className="font-bold">{levelId}</span>
+                      <span className="text-gray-600">Số Màn:</span>
+                      <span className="font-bold">{levelId + 1}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -585,7 +585,7 @@ export default function EditLevelPage() {
             <div className="lg:col-span-9">
               <Card className="bg-white shadow-md">
                 <CardHeader>
-                  <CardTitle>Grid Cấp Độ</CardTitle>
+                  <CardTitle>Grid Màn Chơi</CardTitle>
                   <CardDescription>Nhấp và kéo để vẽ khối</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">

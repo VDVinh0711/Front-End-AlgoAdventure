@@ -221,8 +221,8 @@ export default function LevelsPage() {
           {/* Page Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-rose-500">Quản Lý Cấp Độ</h1>
-              <p className="text-gray-600 mt-1">Xem và quản lý cấp độ trong trò chơi</p>
+              <h1 className="text-3xl font-bold text-rose-500">Quản Lý Màn Chơi</h1>
+              <p className="text-gray-600 mt-1">Xem và quản lý màn chơi trong trò chơi</p>
               {error && (
                 <div className="mt-2 text-sm text-red-500 bg-red-50 p-2 rounded-md">
                   {error}
@@ -233,7 +233,7 @@ export default function LevelsPage() {
               <Link href="/admin/levels/create">
                 <Button className="bg-rose-500 hover:bg-rose-600 text-white rounded-full">
                   <Plus className="h-4 w-4 mr-2" />
-                  Thêm Cấp Độ Mới
+                  Thêm Màn Chơi Mới
                 </Button>
               </Link>
             </div>
@@ -289,7 +289,7 @@ export default function LevelsPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
-                  placeholder="Tìm kiếm theo ID cấp độ..."
+                  placeholder="Tìm kiếm theo số màn..."
                   className="pl-10 rounded-full"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -316,7 +316,7 @@ export default function LevelsPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead className="w-[80px]">ID</TableHead>
+                      <TableHead className="w-[80px]">Màn</TableHead>
                       <TableHead>Thời Gian Cập Nhật</TableHead>
                       <TableHead className="text-right">Hành Động</TableHead>
                     </TableRow>
@@ -341,7 +341,7 @@ export default function LevelsPage() {
                                   ) : (
                                     <ChevronUp className="h-4 w-4 mr-2 text-gray-500" />
                                   )}
-                                  {level.maCapDo}
+                                  {level.maCapDo + 1}
                                 </div>
                               </TableCell>
                               <TableCell>{new Date(level.thoiGianCapNhat).toLocaleString()}</TableCell>
@@ -375,7 +375,7 @@ export default function LevelsPage() {
                                   <div className="bg-gray-50 p-4">
                                     <div className="flex flex-col md:flex-row gap-6">
                                       <div className="flex-1">
-                                        <h3 className="text-lg font-medium mb-2">Level {level.maCapDo} Grid</h3>
+                                        <h3 className="text-lg font-medium mb-2">Màn {level.maCapDo + 1} Grid</h3>
                                         {renderLevelGrid(levelData)}
                                         <div className="mt-2 text-sm text-gray-500">
                                           <p>Total Coins: {levelData.CoinInGame}</p>
@@ -423,7 +423,7 @@ export default function LevelsPage() {
                   <div className="text-sm text-gray-500">
                     Hiển thị <span className="font-medium">{indexOfFirstLevel + 1}</span> đến{" "}
                     <span className="font-medium">{Math.min(indexOfLastLevel, filteredLevels.length)}</span> của{" "}
-                    <span className="font-medium">{filteredLevels.length}</span> cấp độ
+                    <span className="font-medium">{filteredLevels.length}</span> màn chơi
                   </div>
                   <div className="flex space-x-2">
                     <Button 

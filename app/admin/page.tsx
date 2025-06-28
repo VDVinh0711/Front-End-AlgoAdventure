@@ -28,16 +28,16 @@ export default function AdminPage() {
               <CardHeader className="bg-rose-500 text-white">
                 <CardTitle className="flex items-center gap-2">
                   <Layers className="h-5 w-5" />
-                  Cấp Độ
+                  Màn Chơi
                 </CardTitle>
-                <CardDescription className="text-rose-100">Quản lý cấp độ trong trò chơi</CardDescription>
+                <CardDescription className="text-rose-100">Quản lý màn chơi trong trò chơi</CardDescription>
               </CardHeader>
               <CardContent className="pt-6">
-                <p className="text-sm text-gray-600">Tạo, chỉnh sửa và sắp xếp cấp độ và cài đặt độ khó trong trò chơi.</p>
+                <p className="text-sm text-gray-600">Tạo, chỉnh sửa và sắp xếp màn chơi và cài đặt độ khó trong trò chơi.</p>
               </CardContent>
               <CardFooter>
                 <Link href="/admin/levels" className="w-full">
-                  <Button className="w-full bg-rose-500 hover:bg-rose-600 text-white rounded-full">Quản Lý Cấp Độ</Button>
+                  <Button className="w-full bg-rose-500 hover:bg-rose-600 text-white rounded-full">Quản Lý Màn Chơi</Button>
                 </Link>
               </CardFooter>
             </Card>

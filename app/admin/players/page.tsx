@@ -34,14 +34,14 @@ import {
 import Navigation from "@/components/ui/navigation"
 import { ApiController } from "@/app/services/apiController"
 
-// Define the player interface to match API response
+// Define the player interface to match new API response
 interface Player {
   maNguoiChoi: number
-  soTien: number
-  soKinhNghiem: number
-  soGoiY: number
+  tenNguoiChoi: string
   capDo: number
-  diemSo: number
+  soTien: number
+  soGoiY: number
+  capDoHienTai: number
 }
 
 export default function PlayersPage() {
@@ -51,9 +51,11 @@ export default function PlayersPage() {
   const [playerToDelete, setPlayerToDelete] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [chartData, setChartData] = useState<any[]>([])
-  const [chartType, setChartType] = useState<"score" | "level" | "money">("score")
+  const [chartType, setChartType] = useState<"level" | "money">("level")
   const [visualizationType, setVisualizationType] = useState<"bar" | "line" | "pie">("pie")
   const [error, setError] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   // Fetch players data from API
   useEffect(() => {
@@ -104,8 +106,28 @@ export default function PlayersPage() {
 
   // Filter players based on search term
   const filteredPlayers = Array.isArray(players) ? players.filter((player) => 
-    player.maNguoiChoi.toString().includes(searchTerm)
+    player.maNguoiChoi.toString().includes(searchTerm) ||
+    player.tenNguoiChoi.toLowerCase().includes(searchTerm.toLowerCase())
   ) : []
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredPlayers.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedPlayers = filteredPlayers.slice(startIndex, endIndex)
+
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm])
+
+  const handlePreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1))
+  }
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages))
+  }
 
   useEffect(() => {
     if (players.length > 0) {
@@ -116,35 +138,17 @@ export default function PlayersPage() {
   const prepareChartData = () => {
     let data: any[] = []
 
-    if (chartType === "score") {
-      // Group players by score ranges
-      const scoreRanges = [
-        { min: 0, max: 0, label: "0" },
-        { min: 1, max: 500, label: "1-500" },
-        { min: 501, max: 1000, label: "501-1000" },
-        { min: 1001, max: 2000, label: "1001-2000" },
-        { min: 2001, max: 3000, label: "2001-3000" },
-      ]
-
-      data = scoreRanges.map((range) => {
-        const count = players.filter((player) => player.diemSo >= range.min && player.diemSo <= range.max).length
-        return {
-          name: range.label,
-          value: count,
-          fill: getColorForIndex(scoreRanges.indexOf(range)),
-        }
-      })
-    } else if (chartType === "level") {
+    if (chartType === "level") {
       const levelRanges = [
-        { min: 0, max: 0, label: "Level 0" },
-        { min: 1, max: 5, label: "Level 1-5" },
-        { min: 6, max: 15, label: "Level 6-15" },
-        { min: 16, max: 25, label: "Level 16-25" },
-        { min: 26, max: 35, label: "Level 26-35" },
+        { min: 0, max: 0, label: "Màn 0" },
+        { min: 1, max: 5, label: "Màn 1-5" },
+        { min: 6, max: 15, label: "Màn 6-15" },
+        { min: 16, max: 25, label: "Màn 16-25" },
+        { min: 26, max: 35, label: "Màn 26-35" },
       ]
 
       data = levelRanges.map((range) => {
-        const count = players.filter((player) => player.capDo >= range.min && player.capDo <= range.max).length
+        const count = players.filter((player) => (player.capDoHienTai + 1) >= range.min && (player.capDoHienTai + 1) <= range.max).length
         return {
           name: range.label,
           value: count,
@@ -154,11 +158,11 @@ export default function PlayersPage() {
     } else if (chartType === "money") {
       // Group players by money ranges
       const moneyRanges = [
-        { min: 0, max: 950, label: "0-950" },
-        { min: 951, max: 975, label: "951-975" },
-        { min: 976, max: 985, label: "976-985" },
-        { min: 986, max: 995, label: "986-995" },
-        { min: 996, max: 1000, label: "996-1000" },
+        { min: 0, max: 10, label: "0-10" },
+        { min: 11, max: 50, label: "11-50" },
+        { min: 51, max: 100, label: "51-100" },
+        { min: 101, max: 500, label: "101-500" },
+        { min: 501, max: 1000, label: "501+" },
       ]
 
       data = moneyRanges.map((range) => {
@@ -281,10 +285,8 @@ export default function PlayersPage() {
   }
 
   const getChartTitle = () => {
-    if (chartType === "score") {
-      return "Phân Bố Người Chơi Theo Điểm"
-    } else if (chartType === "level") {
-      return "Phân Bố Người Chơi Theo Cấp Độ"
+    if (chartType === "level") {
+      return "Phân Bố Người Chơi Theo Màn Chơi Hiện Tại"
     } else if (chartType === "money") {
       return "Phân Bố Người Chơi Theo Tiền"
     }
@@ -362,24 +364,24 @@ export default function PlayersPage() {
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Trung Bình Cấp Độ</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500">Trung Bình Cấp Độ Người Chơi</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">
                   {players.length > 0 
-                    ? Math.round(players.reduce((acc, player) => acc + player.capDo, 0) / players.length) 
+                    ? Math.round(players.reduce((acc, player) => acc + (player.capDo + 1), 0) / players.length) 
                     : 0}
                 </div>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500">Trung Bình Điểm</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500">Trung Bình Số Tiền</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-rose-500">
                   {players.length > 0
-                    ? Math.round(players.reduce((acc, player) => acc + player.diemSo, 0) / players.length)
+                    ? Math.round(players.reduce((acc, player) => acc + player.soTien, 0) / players.length)
                     : 0}
                 </div>
               </CardContent>
@@ -436,19 +438,15 @@ export default function PlayersPage() {
                   <p>Đang tải dữ liệu biểu đồ...</p>
                 </div>
               ) : (
-                <Tabs defaultValue="score" onValueChange={(value) => setChartType(value as any)}>
-                  <TabsList className="grid w-full grid-cols-3 mb-6">
-                    <TabsTrigger value="score" className="rounded-full">
-                      Theo Điểm
-                    </TabsTrigger>
+                <Tabs defaultValue="level" onValueChange={(value) => setChartType(value as any)}>
+                  <TabsList className="grid w-full grid-cols-2 mb-6">
                     <TabsTrigger value="level" className="rounded-full">
-                      Theo Cấp Độ
+                      Theo Màn Chơi Hiện Tại
                     </TabsTrigger>
                     <TabsTrigger value="money" className="rounded-full">
                       Theo Tiền
                     </TabsTrigger>
                   </TabsList>
-                  <TabsContent value="score">{renderChart()}</TabsContent>
                   <TabsContent value="level">{renderChart()}</TabsContent>
                   <TabsContent value="money">{renderChart()}</TabsContent>
                 </Tabs>
@@ -462,7 +460,7 @@ export default function PlayersPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
-                  placeholder="Tìm kiếm theo mã người chơi..."
+                  placeholder="Tìm kiếm theo mã người chơi hoặc tên..."
                   className="pl-10 rounded-full"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -486,23 +484,25 @@ export default function PlayersPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
+                      <TableHead>STT</TableHead>
                       <TableHead>Mã Người Chơi</TableHead>
+                      <TableHead>Tên Người Chơi</TableHead>
+                      <TableHead>Cấp Độ Người Chơi</TableHead>
                       <TableHead>Số Tiền</TableHead>
-                      <TableHead>Số Kinh Nghiệm</TableHead>
                       <TableHead>Số Gợi Ý</TableHead>
-                      <TableHead>Cấp Độ</TableHead>
-                      <TableHead>Điểm Số</TableHead>
+                      <TableHead>Màn Chơi Hiện Tại</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredPlayers.map((player) => (
+                    {paginatedPlayers.map((player, index) => (
                       <TableRow key={player.maNguoiChoi} className="hover:bg-gray-50">
-                        <TableCell className="font-medium">{player.maNguoiChoi}</TableCell>
+                        <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
+                        <TableCell>{player.maNguoiChoi}</TableCell>
+                        <TableCell>{player.tenNguoiChoi}</TableCell>
+                        <TableCell>{player.capDo + 1}</TableCell>
                         <TableCell>{player.soTien}</TableCell>
-                        <TableCell>{player.soKinhNghiem}</TableCell>
                         <TableCell>{player.soGoiY}</TableCell>
-                        <TableCell>{player.capDo}</TableCell>
-                        <TableCell>{player.diemSo}</TableCell>
+                        <TableCell>{player.capDoHienTai + 1}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -513,15 +513,27 @@ export default function PlayersPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between px-4 py-4 border-t">
               <div className="text-sm text-gray-500">
-                Hiển thị <span className="font-medium">1</span> đến{" "}
-                <span className="font-medium">{filteredPlayers.length}</span> trên{" "}
+                Hiển thị <span className="font-medium">{startIndex + 1}</span> đến{" "}
+                <span className="font-medium">{Math.min(endIndex, filteredPlayers.length)}</span> trên{" "}
                 <span className="font-medium">{filteredPlayers.length}</span> người chơi
               </div>
               <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="rounded-full" disabled>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="rounded-full" 
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                >
                   Trang Trước
                 </Button>
-                <Button variant="outline" size="sm" className="rounded-full" disabled>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="rounded-full" 
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
                   Trang Tiếp
                 </Button>
               </div>

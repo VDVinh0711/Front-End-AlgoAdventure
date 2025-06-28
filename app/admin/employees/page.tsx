@@ -36,7 +36,7 @@ interface Employee {
 
 export default function EmployeesPage() {
   const router = useRouter();
-  const { hasRole } = useAuth();
+  const { hasRole, userData } = useAuth();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("")
   const [showJsonData, setShowJsonData] = useState<string | null>(null)
@@ -81,13 +81,20 @@ export default function EmployeesPage() {
     fetchEmployees();
   }, [isAdmin]);
 
-  // Filter employees based on search term
-  const filteredEmployees = employeeList.filter(
-    (employee) =>
-      employee.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.IdUser.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  // Filter employees based on search term and exclude current user
+  const filteredEmployees = employeeList
+    .filter((employee) => {
+      // Exclude current user from the list
+      if (userData?.IDUser && employee.IdUser === userData.IDUser) {
+        return false;
+      }
+      // Apply search filter
+      return (
+        employee.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.IdUser.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    })
 
   // Format date for display
   const formatDate = (dateString: string) => {
@@ -364,7 +371,7 @@ export default function EmployeesPage() {
                   <div className="text-sm text-gray-500">
                     Hiển thị <span className="font-medium">1</span> đến{" "}
                     <span className="font-medium">{filteredEmployees.length}</span> trên{" "}
-                    <span className="font-medium">{employeeList.length}</span> Nhân Viên
+                    <span className="font-medium">{filteredEmployees.length}</span> Nhân Viên
                   </div>
                   <div className="flex space-x-2">
                     <Button variant="outline" size="sm" className="rounded-full" disabled>
