@@ -73,7 +73,6 @@ export default function PlayerDashboardPage() {
           } else if (chartType === "level") {
       // Group players by current stage ranges (using capDo as mock data for current stage)
       const levelRanges = [
-        { min: 0, max: 0, label: "Màn 0" },
         { min: 1, max: 5, label: "Màn 1-5" },
         { min: 6, max: 15, label: "Màn 6-15" },
         { min: 16, max: 25, label: "Màn 16-25" },
@@ -81,7 +80,11 @@ export default function PlayerDashboardPage() {
       ]
 
       data = levelRanges.map((range) => {
-        const count = playerData.filter((player) => (player.capDo + 1) >= range.min && (player.capDo + 1) <= range.max).length
+        const count = playerData.filter((player) => 
+          player.capDo > 0 && 
+          (player.capDo + 1) >= range.min && 
+          (player.capDo + 1) <= range.max
+        ).length
         return {
           name: range.label,
           value: count,
@@ -108,8 +111,10 @@ export default function PlayerDashboardPage() {
       })
     }
 
-    // Sort data in descending order by value
+    // Filter out entries with 0 values and sort data in descending order by value
+    data = data.filter(item => item.value > 0)
     data.sort((a, b) => b.value - a.value)
+    console.log(`Chart Type: ${chartType}, Filtered Data:`, data)
     setChartData(data)
   }
 
@@ -122,7 +127,7 @@ export default function PlayerDashboardPage() {
     if (visualizationType === "bar") {
       return (
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={chartData}>
+          <BarChart data={chartData} key={`bar-${chartType}-${chartData.length}`}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" fontSize={12} tickLine={false} />
             <YAxis fontSize={12} tickLine={false} />
@@ -151,7 +156,7 @@ export default function PlayerDashboardPage() {
     } else if (visualizationType === "line") {
       return (
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
+          <LineChart data={chartData} key={`line-${chartType}-${chartData.length}`}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" fontSize={12} tickLine={false} />
             <YAxis fontSize={12} tickLine={false} />
@@ -176,7 +181,7 @@ export default function PlayerDashboardPage() {
     } else if (visualizationType === "pie") {
       return (
         <ResponsiveContainer width="100%" height={300}>
-          <RechartsPieChart>
+          <RechartsPieChart key={`pie-${chartType}-${chartData.length}`}>
             <Pie
               data={chartData}
               cx="50%"

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Play, ArrowLeft, Save, X, Plus, ShieldAlert } from "lucide-react"
@@ -35,10 +35,14 @@ interface Role {
   moTa: string;
 }
 
-export default function EditEmployeePage({ params }: { params: { id: string } }) {
+export default function EditEmployeePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const { hasRole } = useAuth();
   const { toast } = useToast();
+  
+  // Extract id safely using React.use() to unwrap the Promise
+  const resolvedParams = use(params);
+  const employeeId = resolvedParams?.id || "";
   const [employee, setEmployee] = useState<Employee | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -90,14 +94,14 @@ export default function EditEmployeePage({ params }: { params: { id: string } })
         setLoading(true);
         const apiController = new ApiController();
         const employees = await apiController.get<Employee[]>('NguoiDung/getAllEmployees');
-        const foundEmployee = employees.find(emp => emp.IdUser === params.id);
+        const foundEmployee = employees.find(emp => emp.IdUser === employeeId);
         
         if (foundEmployee) {
           setEmployee(foundEmployee);
           setRoles([...foundEmployee.RoleUsers]);
           setError(null);
         } else {
-          setError(`Employee with ID ${params.id} not found`);
+          setError(`Employee with ID ${employeeId} not found`);
         }
       } catch (err) {
         console.error("Error fetching employee:", err);
@@ -108,7 +112,7 @@ export default function EditEmployeePage({ params }: { params: { id: string } })
     };
 
     fetchEmployee();
-  }, [params.id, isAdmin]);
+  }, [employeeId, isAdmin]);
 
   // Add a new role
   const addRole = () => {
@@ -217,7 +221,7 @@ export default function EditEmployeePage({ params }: { params: { id: string } })
         <div className="text-center">
           <div className="text-rose-500 text-4xl mb-4">😕</div>
           <h1 className="text-2xl font-bold text-gray-800 mb-2">Employee Not Found</h1>
-          <p className="text-gray-600 mb-6">We couldn't find an employee with the ID: {params.id}</p>
+          <p className="text-gray-600 mb-6">We couldn't find an employee with the ID: {employeeId}</p>
           <Link href="/admin/employees">
             <Button className="bg-rose-500 hover:bg-rose-600">Back to Employees</Button>
           </Link>

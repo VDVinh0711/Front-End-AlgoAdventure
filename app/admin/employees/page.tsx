@@ -211,10 +211,8 @@ export default function EmployeesPage() {
         NewPassword: passwordDialog.newPassword
       });
 
-      // Show success alert
       alert(`Đặt mật khẩu thành công!\nMật khẩu đã được đặt lại cho ${passwordDialog.name}.`);
 
-      // Close the dialog and reset form
       setPasswordDialog({
         isOpen: false,
         userId: "",
@@ -227,15 +225,12 @@ export default function EmployeesPage() {
 
     } catch (error) {
       console.error("Error resetting password:", error);
-      
-      // Show error alert
+    
       alert("Đặt mật khẩu thất bại!\nKhông thể đặt lại mật khẩu. Vui lòng thử lại.");
     } finally {
       setPasswordDialog(prev => ({ ...prev, isSubmitting: false }));
     }
   }
-
-  // If not admin, show access denied
   if (!isAdmin) {
     return (
       <div className="min-h-screen bg-rose-50">

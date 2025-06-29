@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Save } from "lucide-react"
@@ -22,10 +22,11 @@ interface SkinData {
   giaTien?: number
 }
 
-export default function EditSkinPage({ params }: { params: { id: string } }) {
+export default function EditSkinPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
-  // Extract id safely to avoid the warning
-  const skinId = params?.id || "";
+  // Extract id safely using React.use() to unwrap the Promise
+  const resolvedParams = use(params);
+  const skinId = resolvedParams?.id || "";
 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
