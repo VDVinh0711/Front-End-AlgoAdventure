@@ -341,7 +341,7 @@ export default function LevelsPage() {
                                   ) : (
                                     <ChevronUp className="h-4 w-4 mr-2 text-gray-500" />
                                   )}
-                                  {level.maCapDo + 1}
+                                  {level.maCapDo}
                                 </div>
                               </TableCell>
                               <TableCell>{new Date(level.thoiGianCapNhat).toLocaleString()}</TableCell>
@@ -375,7 +375,7 @@ export default function LevelsPage() {
                                   <div className="bg-gray-50 p-4">
                                     <div className="flex flex-col md:flex-row gap-6">
                                       <div className="flex-1">
-                                        <h3 className="text-lg font-medium mb-2">Màn {level.maCapDo + 1} Grid</h3>
+                                        <h3 className="text-lg font-medium mb-2">Màn {level.maCapDo } Grid</h3>
                                         {renderLevelGrid(levelData)}
                                         <div className="mt-2 text-sm text-gray-500">
                                           <p>Total Coins: {levelData.CoinInGame}</p>
