@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Play, ArrowLeft, Plus, Search, Filter, Check, X, Eye, EyeOff, UserCheck, UserX, Edit, ShieldAlert } from "lucide-react"
+import { Play, ArrowLeft, Plus, Search, Filter, Check, X, Eye, EyeOff, UserCheck, UserX, Edit, ShieldAlert, Key } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -21,12 +21,13 @@ import { format } from "date-fns"
 import Navigation from "@/components/ui/navigation"
 import { useAuth } from "@/app/contexts/AuthContext"
 import { ApiController } from "@/app/services/apiController"
-import { useToast } from "@/components/ui/use-toast"
+
 
 // Employee data interface
 interface Employee {
   IdUser: string;
   LoginType: string;
+  TaiKhoan: string;
   Email: string;
   TimeCreate: string;
   RoleUsers: string[];
@@ -37,7 +38,6 @@ interface Employee {
 export default function EmployeesPage() {
   const router = useRouter();
   const { hasRole, userData } = useAuth();
-  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("")
   const [showJsonData, setShowJsonData] = useState<string | null>(null)
   const [employeeList, setEmployeeList] = useState<Employee[]>([])
@@ -53,6 +53,24 @@ export default function EmployeesPage() {
     userId: "",
     name: "",
     currentStatus: false,
+  })
+
+  const [passwordDialog, setPasswordDialog] = useState<{
+    isOpen: boolean
+    userId: string
+    name: string
+    taiKhoan: string
+    newPassword: string
+    isSubmitting: boolean
+    showPassword: boolean
+  }>({
+    isOpen: false,
+    userId: "",
+    name: "",
+    taiKhoan: "",
+    newPassword: "",
+    isSubmitting: false,
+    showPassword: false,
   })
 
   // Check if user has Admin role
@@ -91,6 +109,7 @@ export default function EmployeesPage() {
       // Apply search filter
       return (
         employee.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        employee.TaiKhoan.toLowerCase().includes(searchTerm.toLowerCase()) ||
         employee.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         employee.IdUser.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -141,13 +160,8 @@ export default function EmployeesPage() {
         })
       );
       
-      // Show success toast notification
-      toast({
-        title: "Status Updated",
-        description: `${confirmDialog.name} has been ${!confirmDialog.currentStatus ? 'activated' : 'deactivated'} successfully.`,
-        variant: "default",
-        className: "bg-green-100 border-green-500 border text-green-800",
-      });
+      // Show success alert
+      alert(`Cập nhật trạng thái thành công!\n${confirmDialog.name} đã được ${!confirmDialog.currentStatus ? 'kích hoạt' : 'vô hiệu hóa'}.`);
       
       // Close the dialog
       setConfirmDialog({
@@ -161,15 +175,63 @@ export default function EmployeesPage() {
       console.error("Error updating employee status:", error);
       setError("Failed to update employee status. Please try again.");
       
-      // Show error toast notification
-      toast({
-        title: "Update Failed",
-        description: "Could not update employee status. Please try again.",
-        variant: "destructive",
-        className: "bg-red-100 border-red-500 border text-red-800",
-      });
+      // Show error alert
+      alert("Cập nhật thất bại!\nKhông thể cập nhật trạng thái nhân viên. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  // Open password reset dialog
+  const openPasswordDialog = (userId: string, name: string, email: string, taiKhoan: string) => {
+    setPasswordDialog({
+      isOpen: true,
+      userId,
+      name,
+      taiKhoan,
+      newPassword: "",
+      isSubmitting: false,
+      showPassword: false,
+    })
+  }
+
+  // Handle password reset
+  const handlePasswordReset = async () => {
+    if (!passwordDialog.newPassword.trim()) {
+      alert("Vui lòng nhập mật khẩu mới.");
+      return;
+    }
+
+    try {
+      setPasswordDialog(prev => ({ ...prev, isSubmitting: true }));
+      
+      const apiController = new ApiController();
+      const response = await apiController.post('/NguoiDung/admin/resetpassword', {
+        MaNguoiDung: passwordDialog.userId,
+        NewPassword: passwordDialog.newPassword
+      });
+
+      // Show success alert
+      alert(`Đặt mật khẩu thành công!\nMật khẩu đã được đặt lại cho ${passwordDialog.name}.`);
+
+      // Close the dialog and reset form
+      setPasswordDialog({
+        isOpen: false,
+        userId: "",
+        name: "",
+        taiKhoan: "",
+        newPassword: "",
+        isSubmitting: false,
+        showPassword: false,
+      });
+
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      
+      // Show error alert
+      alert("Đặt mật khẩu thất bại!\nKhông thể đặt lại mật khẩu. Vui lòng thử lại.");
+    } finally {
+      setPasswordDialog(prev => ({ ...prev, isSubmitting: false }));
     }
   }
 
@@ -245,7 +307,7 @@ export default function EmployeesPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
-                  placeholder="Tìm kiếm nhân viên..."
+                  placeholder="Tìm kiếm theo tên, tài khoản, email..."
                   className="pl-10 rounded-full"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -274,6 +336,7 @@ export default function EmployeesPage() {
                   <TableHeader>
                     <TableRow className="bg-gray-50">
                       <TableHead>Tên Nhân Viên</TableHead>
+                      <TableHead>Tài Khoản</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Vai Trò</TableHead>
                       <TableHead>Ngày Tạo</TableHead>
@@ -286,6 +349,7 @@ export default function EmployeesPage() {
                       filteredEmployees.map((employee) => (
                         <TableRow key={employee.IdUser} className="hover:bg-gray-50">
                           <TableCell className="font-medium">{employee.Name}</TableCell>
+                          <TableCell>{employee.TaiKhoan}</TableCell>
                           <TableCell>{employee.Email}</TableCell>
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
@@ -318,6 +382,15 @@ export default function EmployeesPage() {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-blue-500 border-blue-500 hover:bg-blue-50"
+                                onClick={() => openPasswordDialog(employee.IdUser, employee.Name, employee.Email, employee.TaiKhoan)}
+                              >
+                                <Key className="h-4 w-4 mr-1" />
+                                Đặt mật khẩu
+                              </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -356,7 +429,7 @@ export default function EmployeesPage() {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                        <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                           {searchTerm ? "No employees found matching your search" : "No employee data available"}
                         </TableCell>
                       </TableRow>
@@ -426,6 +499,83 @@ export default function EmployeesPage() {
                 </>
               ) : (
                 confirmDialog.currentStatus ? "Deactivate" : "Activate"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Password Reset Dialog */}
+      <Dialog
+        open={passwordDialog.isOpen}
+        onOpenChange={(open) => !open && setPasswordDialog((prev) => ({ ...prev, isOpen: false }))}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Đặt mật khẩu mới</DialogTitle>
+            <DialogDescription>
+              Đặt mật khẩu mới cho nhân viên <strong>{passwordDialog.name}</strong>
+              <br />
+              Tài khoản: <strong>{passwordDialog.taiKhoan}</strong>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="newPassword" className="text-sm font-medium">
+                Mật khẩu mới
+              </label>
+              <div className="relative">
+                <Input
+                  id="newPassword"
+                  type={passwordDialog.showPassword ? "text" : "password"}
+                  placeholder="Nhập mật khẩu mới..."
+                  value={passwordDialog.newPassword}
+                  onChange={(e) => setPasswordDialog(prev => ({ ...prev, newPassword: e.target.value }))}
+                  disabled={passwordDialog.isSubmitting}
+                  className="w-full pr-10"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setPasswordDialog(prev => ({ ...prev, showPassword: !prev.showPassword }))}
+                  disabled={passwordDialog.isSubmitting}
+                >
+                  {passwordDialog.showPassword ? (
+                    <EyeOff className="h-4 w-4 text-gray-500" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-gray-500" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex flex-row justify-end gap-2 sm:justify-end">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setPasswordDialog((prev) => ({ ...prev, isOpen: false }))}
+              disabled={passwordDialog.isSubmitting}
+            >
+              Hủy
+            </Button>
+            <Button
+              type="button"
+              className="bg-blue-500 hover:bg-blue-600"
+              onClick={handlePasswordReset}
+              disabled={passwordDialog.isSubmitting || !passwordDialog.newPassword.trim()}
+            >
+              {passwordDialog.isSubmitting ? (
+                <>
+                  <div className="animate-spin h-4 w-4 mr-2 border-b-2 border-white rounded-full"></div>
+                  Đang xử lý...
+                </>
+              ) : (
+                <>
+                  <Key className="h-4 w-4 mr-2" />
+                  Đặt mật khẩu
+                </>
               )}
             </Button>
           </DialogFooter>
